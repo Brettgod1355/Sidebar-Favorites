@@ -1,1 +1,90 @@
-# Sidebar-Favorites
+# Sidebar Favorites
+
+Save and arrange shortcuts to your favorite RuneLite sidebar panels.
+
+An experimental development plugin. It is **not available in the Plugin Hub**
+and has not been approved by RuneLite.
+
+## Using favorites
+
+1. Open the gold star near the bottom of RuneLite's sidebar.
+2. Click **Add favorites**, search for an available panel, and click **Add selected**.
+3. Click a favorite's name to open that plugin's original panel.
+4. Drag a favorite to move it. Alternatively, select its grip and use **Up** or **Down**.
+5. Select a grip and click **Remove** to remove the shortcut.
+
+Favorites are saved in the active RuneLite configuration profile and survive
+restarts. If a plugin is disabled, its favorite stays in place as unavailable
+and becomes usable again when the panel returns. New panels can be added explicitly.
+The star uses `Integer.MAX_VALUE` priority because RuneLite sorts lower numbers
+first. Another plugin using the same value may sort after it by tooltip name.
+
+The picker includes currently available sidebar panels. Plugins without a panel,
+disabled plugins, and non-panel utility buttons cannot be added. Clicking a
+favorite switches away from Favorites to the original panel; click the star to return.
+
+## Development
+
+Install JDK 17, clone this repository, and open its `build.gradle` in IntelliJ IDEA.
+Wait for Gradle import to finish. Run:
+
+```sh
+./gradlew run
+```
+
+On Windows:
+
+```powershell
+.\gradlew.bat run
+```
+
+Or create an IntelliJ **Application** run configuration:
+
+| Field | Value |
+| --- | --- |
+| Name | Sidebar Favorites Test |
+| JDK | 17 |
+| Module classpath | `sidebar-favorites.test` |
+| Main class | `com.sidebarfavorites.SidebarFavoritesLauncher` |
+| VM options | `-ea` |
+| Program arguments | `--developer-mode --debug` |
+| Working directory | This repository's checkout |
+
+Enable **Sidebar Favorites** in the development client's plugin list. You can
+exercise panel shortcuts without logging into the game. The launcher uses the
+standard RuneLite data directory unless you configure a separate one.
+
+Run automated tests and build the plugin JAR with:
+
+```sh
+./gradlew test build
+```
+
+The default dependency is RuneLite's latest release. To reproduce a version:
+
+```sh
+./gradlew test build -PruneLiteVersion=1.12.38
+```
+
+## Compatibility
+
+The plugin discovers existing tabs through public Swing component methods and
+selects the original component when opening a favorite. It does not replace
+RuneLite's UI delegate, reorder native tabs, change other plugins' priorities,
+reparent their panels, or install handlers on the shared toolbar.
+
+This still depends on RuneLite's current Swing sidebar structure. It is not an
+official panel-discovery API. Future client changes may require an update.
+The implementation needs no changes to other plugins and uses no reflection,
+global input hooks, or networking.
+
+Panel class name plus tooltip forms the saved identifier. Renaming either can
+leave an old favorite unavailable; remove it and add the renamed panel. Duplicate
+identifiers are treated as unavailable rather than opening an arbitrary panel.
+See [testing](docs/TESTING.md) and [implementation notes](docs/DESIGN.md).
+
+## License
+
+[BSD 2-Clause](LICENSE). Others may use, modify, and redistribute the code,
+including commercially, while retaining the required notices and disclaimer.
+See [third-party notices](THIRD_PARTY_NOTICES.md) for reused work and build tooling.
