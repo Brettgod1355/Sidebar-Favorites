@@ -63,6 +63,7 @@ final class FavoritesPanel extends PluginPanel
     private Favorites saved = Favorites.empty();
     private boolean choosing;
     private boolean editable;
+    private long viewGeneration;
 
     FavoritesPanel(Runnable refresh, Consumer<String> open, Consumer<String> add,
         Consumer<String> removeFavorite, BiConsumer<String, Integer> move, Runnable reset)
@@ -149,9 +150,10 @@ final class FavoritesPanel extends PluginPanel
         footer.add(status, BorderLayout.CENTER);
         repair.addActionListener(event ->
         {
+            long requestedView = viewGeneration;
             if (JOptionPane.showConfirmDialog(this,
                 "Clear the unreadable favorites saved for this profile?", "Reset favorites",
-                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
+                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION && requestedView == viewGeneration)
             {
                 this.reset.run();
             }
@@ -178,6 +180,7 @@ final class FavoritesPanel extends PluginPanel
     void update(Favorites favorites, List<PanelCatalog.Entry> current, boolean readable, String message)
     {
         PanelCatalog.requireEdt();
+        viewGeneration++;
         saved = favorites;
         panels = new ArrayList<>(current);
         editable = readable;

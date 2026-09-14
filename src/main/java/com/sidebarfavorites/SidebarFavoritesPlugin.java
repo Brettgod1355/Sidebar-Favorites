@@ -196,8 +196,16 @@ public class SidebarFavoritesPlugin extends Plugin
     {
         if (currentView())
         {
-            store.reset();
-            refresh(null);
+            try
+            {
+                store.reset();
+                refresh(null);
+            }
+            catch (RuntimeException ex)
+            {
+                LOG.warn("Could not reset Sidebar Favorites settings", ex);
+                refresh("Could not reset favorites. Please try again.");
+            }
         }
     }
 

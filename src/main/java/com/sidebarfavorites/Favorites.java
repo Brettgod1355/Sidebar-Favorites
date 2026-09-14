@@ -141,7 +141,7 @@ final class Favorites
         }
         try
         {
-            JsonObject document = JsonParser.parseString(json).getAsJsonObject();
+            JsonObject document = new JsonParser().parse(json).getAsJsonObject();
             JsonElement version = document.get("version");
             if (version == null || !version.isJsonPrimitive()
                 || !version.getAsJsonPrimitive().isNumber() || !"1".equals(version.getAsString()))
