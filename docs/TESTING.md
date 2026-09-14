@@ -1,5 +1,17 @@
 # Testing
 
+## Recorded result
+
+On 2026-09-14, [GitHub Actions run 34908177299](https://github.com/Brettgod1355/Sidebar-Favorites/actions/runs/34908177299)
+built the plugin JAR and passed **all 20 tests on both Java 11 and Java 17**.
+The tested code commit is `e5d8e48b1820c4a01dd4e48d6c5a732c6b3f28e8`.
+The build used the current RuneLite release dependency; release metadata at the
+time identified version `1.12.38`.
+
+The local workspace could not download the Gradle distribution, so the complete
+Gradle build/test results come from GitHub Actions. Live-client checks below have
+not yet been completed for Sidebar Favorites.
+
 ## Automated coverage
 
 The test suite exercises saved order and JSON round trips, malformed/newer settings,
