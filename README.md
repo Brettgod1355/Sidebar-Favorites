@@ -75,8 +75,6 @@ Removing a favorite also removes its hotkey.
 
 Found a bug or have an idea? [Open an issue](https://github.com/Brettgod1355/Sidebar-Favorites/issues).
 
-**Availability:** not yet submitted to or approved for the RuneLite Plugin Hub.
-
 ## License
 
 [BSD 2-Clause](https://github.com/Brettgod1355/Sidebar-Favorites/blob/main/LICENSE) — free to use, modify, and redistribute under the license terms.
