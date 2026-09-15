@@ -31,6 +31,11 @@ The **Add** and **Edit** buttons share the top row. Turn off **Show instructions
 in plugin settings to hide the help text and leave more room for favorites. Both
 lists scroll vertically when their entries exceed the available space.
 
+Set **Open Favorites hotkey** in plugin settings to open the panel with a shortcut.
+It is unassigned by default and uses RuneLite's normal game-focus hotkey handling,
+including the login screen. Pressing it opens Favorites; it does not toggle it closed.
+Choose a combination that does not conflict with your other bindings.
+
 Favorites are saved in the active RuneLite configuration profile and survive
 restarts. If a plugin is disabled, its favorite stays in place as unavailable
 and becomes usable again when the panel returns. New panels can be added explicitly.

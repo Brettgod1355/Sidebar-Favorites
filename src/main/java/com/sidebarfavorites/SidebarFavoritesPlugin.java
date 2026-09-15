@@ -23,6 +23,8 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.PluginChanged;
 import net.runelite.client.events.ProfileChanged;
+import net.runelite.client.input.KeyManager;
+import net.runelite.client.util.HotkeyListener;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
@@ -39,6 +41,8 @@ public class SidebarFavoritesPlugin extends Plugin
     @Inject private ClientToolbar toolbar;
     @Inject private ConfigManager configManager;
     @Inject private SidebarFavoritesConfig config;
+    @Inject private KeyManager keyManager;
+    private HotkeyListener openHotkey;
 
     private final AtomicBoolean refreshQueued = new AtomicBoolean();
     private final AtomicLong settingsRevision = new AtomicLong();
@@ -77,6 +81,22 @@ public class SidebarFavoritesPlugin extends Plugin
             navigation = NavigationButton.builder().tooltip("Sidebar Favorites")
                 .priority(config.sidebarPosition().priority()).icon(icon()).panel(panel).build();
             toolbar.addNavigation(navigation);
+            openHotkey = new HotkeyListener(() -> config.openHotkey())
+            {
+                @Override
+                public void hotkeyPressed()
+                {
+                    SwingUtilities.invokeLater(() -> withSession(session, () ->
+                    {
+                        if (navigation != null)
+                        {
+                            toolbar.openPanel(navigation);
+                        }
+                    }));
+                }
+            };
+            openHotkey.setEnabledOnLoginScreen(true);
+            keyManager.registerKeyListener(openHotkey);
             // ClientToolbar queues the insertion even when called on the Swing thread.
             scheduleRefresh();
         });
@@ -265,6 +285,11 @@ public class SidebarFavoritesPlugin extends Plugin
         onEdt(() ->
         {
             active = false;
+            if (openHotkey != null)
+            {
+                keyManager.unregisterKeyListener(openHotkey);
+                openHotkey = null;
+            }
             generation++;
             if (panel != null)
             {
