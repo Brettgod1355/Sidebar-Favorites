@@ -13,6 +13,10 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import net.runelite.client.config.Keybind;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.UnaryOperator;
@@ -43,6 +47,9 @@ public class SidebarFavoritesPlugin extends Plugin
     @Inject private SidebarFavoritesConfig config;
     @Inject private KeyManager keyManager;
     private HotkeyListener openHotkey;
+    private final List<HotkeyListener> favoriteListeners = new ArrayList<>();
+    private Map<Keybind, String> registeredKeys = Collections.emptyMap();
+    private long bindingRevision = -1;
 
     private final AtomicBoolean refreshQueued = new AtomicBoolean();
     private final AtomicLong settingsRevision = new AtomicLong();
@@ -77,6 +84,9 @@ public class SidebarFavoritesPlugin extends Plugin
                 id -> withSession(session, () -> edit(favorites -> favorites.remove(id))),
                 (id, gap) -> withSession(session, () -> edit(favorites -> favorites.move(id, gap))),
                 () -> withSession(session, this::reset));
+            panel.configure(
+                (key, value) -> withSession(session, () -> saveSetting(key, value)),
+                (id, key) -> withSession(session, () -> edit(favorites -> favorites.bind(id, key, config.openHotkey()))));
             catalog = new PanelCatalog(panel.getWrappedPanel());
             navigation = NavigationButton.builder().tooltip("Sidebar Favorites")
                 .priority(config.sidebarPosition().priority()).icon(icon()).panel(panel).build();
@@ -145,8 +155,79 @@ public class SidebarFavoritesPlugin extends Plugin
             message = "Saved favorites could not be read. They have been left unchanged. You can reset them below.";
         }
         viewRevision = revision;
+        syncHotkeys(readable ? store.favorites() : Favorites.empty(), entries, revision);
+        panel.syncSettings(config);
         panel.setShowInstructions(config.showInstructions());
         panel.update(store.favorites(), entries, readable, message);
+    }
+
+    private void saveSetting(String key, Object value)
+    {
+        if (!currentView()) { return; }
+        if ("openHotkey".equals(key) && !Keybind.NOT_SET.equals(value))
+        {
+            for (Favorites.Entry entry : store.favorites().entries())
+            {
+                if (value.equals(entry.hotkey))
+                {
+                    refresh("That shortcut is assigned to " + entry.title + ".");
+                    return;
+                }
+            }
+        }
+        configManager.setConfiguration(SidebarFavoritesConfig.GROUP, key, value);
+        refresh(null);
+    }
+
+    private void syncHotkeys(Favorites favorites, List<PanelCatalog.Entry> entries, long revision)
+    {
+        Map<Keybind, Integer> counts = new HashMap<>();
+        for (Favorites.Entry favorite : favorites.entries())
+        {
+            counts.merge(favorite.hotkey, 1, Integer::sum);
+        }
+        Map<Keybind, String> next = new HashMap<>();
+        for (Favorites.Entry favorite : favorites.entries())
+        {
+            Keybind key = favorite.hotkey;
+            boolean available = entries.stream().anyMatch(entry -> entry.id.equals(favorite.id) && entry.available);
+            if (available && !Keybind.NOT_SET.equals(key) && !key.equals(config.openHotkey()) && counts.get(key) == 1)
+            {
+                next.put(key, favorite.id);
+            }
+        }
+        if (next.equals(registeredKeys) && bindingRevision == revision) { return; }
+        clearFavoriteHotkeys();
+        registeredKeys = next;
+        bindingRevision = revision;
+        int session = generation;
+        for (Map.Entry<Keybind, String> entry : next.entrySet())
+        {
+            HotkeyListener listener = new HotkeyListener(() ->
+                settingsRevision.get() == revision ? entry.getKey() : Keybind.NOT_SET)
+            {
+                @Override public void hotkeyPressed()
+                {
+                    SwingUtilities.invokeLater(() -> withSession(session, () ->
+                    {
+                        if (settingsRevision.get() != revision) { return; }
+                        // Reveal the sidebar through our own button before selecting the target.
+                        toolbar.openPanel(navigation);
+                        open(entry.getValue());
+                    }));
+                }
+            };
+            listener.setEnabledOnLoginScreen(true);
+            keyManager.registerKeyListener(listener);
+            favoriteListeners.add(listener);
+        }
+    }
+
+    private void clearFavoriteHotkeys()
+    {
+        for (HotkeyListener listener : favoriteListeners) { keyManager.unregisterKeyListener(listener); }
+        favoriteListeners.clear();
+        registeredKeys = Collections.emptyMap();
     }
 
     private boolean currentView()
@@ -259,7 +340,8 @@ public class SidebarFavoritesPlugin extends Plugin
         if (SidebarFavoritesConfig.GROUP.equals(event.getGroup())
             && (SidebarFavoritesConfig.FAVORITES.equals(event.getKey())
                 || SidebarFavoritesConfig.POSITION.equals(event.getKey())
-                || SidebarFavoritesConfig.SHOW_INSTRUCTIONS.equals(event.getKey())))
+                || SidebarFavoritesConfig.SHOW_INSTRUCTIONS.equals(event.getKey())
+                || "openHotkey".equals(event.getKey())))
         {
             settingsRevision.incrementAndGet();
             scheduleRefresh();
@@ -285,6 +367,7 @@ public class SidebarFavoritesPlugin extends Plugin
         onEdt(() ->
         {
             active = false;
+            clearFavoriteHotkeys();
             if (openHotkey != null)
             {
                 keyManager.unregisterKeyListener(openHotkey);

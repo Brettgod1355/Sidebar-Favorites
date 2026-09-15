@@ -56,7 +56,7 @@ public class FavoritesTest
     public void malformedAndNewerConfigurationsAreRejected()
     {
         String[] invalid = {
-            "null", "[]", "{", "{}", "{\"version\":2,\"favorites\":[]}",
+            "null", "[]", "{", "{}", "{\"version\":3,\"favorites\":[]}",
             "{\"version\":1.5,\"favorites\":[]}", "{\"version\":\"1\",\"favorites\":[]}",
             "{\"version\":1,\"favorites\":[null]}",
             "{\"version\":1,\"favorites\":[{\"id\":1,\"title\":\"A\"}]}",
@@ -67,6 +67,28 @@ public class FavoritesTest
         {
             assertThrows(json, IllegalArgumentException.class, () -> Favorites.decode(json));
         }
+    }
+
+    @Test
+    public void hotkeysRoundTripMoveAndRemoveWithFavorite()
+    {
+        net.runelite.client.config.Keybind key = new net.runelite.client.config.Keybind(70, 128);
+        Favorites bound = three().bind("B", key, net.runelite.client.config.Keybind.NOT_SET);
+        Favorites loaded = Favorites.decode(bound.move("B", 0).encode());
+        assertEquals(key, loaded.entries().get(0).hotkey);
+        assertEquals("B", loaded.entries().get(0).id);
+        assertFalse(loaded.remove("B").entries().stream().anyMatch(entry -> key.equals(entry.hotkey)));
+        assertThrows(IllegalArgumentException.class,
+            () -> bound.bind("A", key, net.runelite.client.config.Keybind.NOT_SET));
+        assertThrows(IllegalArgumentException.class, () -> three().bind("A", key, key));
+    }
+
+    @Test
+    public void oldFavoritesLoadWithoutBindings()
+    {
+        Favorites old = Favorites.decode("{\"version\":1,\"favorites\":[{\"id\":\"A\",\"title\":\"Alpha\"}]}");
+        assertEquals(net.runelite.client.config.Keybind.NOT_SET, old.entries().get(0).hotkey);
+        assertEquals("A", Favorites.decode(old.encode()).entries().get(0).id);
     }
 
     private static Favorites three()

@@ -43,7 +43,7 @@ public class FavoritesStoreTest
     @Test
     public void unreadableSettingsArePreservedUntilExplicitReset()
     {
-        AtomicReference<String> configuration = new AtomicReference<>("{\"version\":2,\"favorites\":[]}");
+        AtomicReference<String> configuration = new AtomicReference<>("{\"version\":3,\"favorites\":[]}");
         FavoritesStore store = new FavoritesStore(configuration::get, configuration::set);
         assertFalse(store.reload());
         String original = configuration.get();

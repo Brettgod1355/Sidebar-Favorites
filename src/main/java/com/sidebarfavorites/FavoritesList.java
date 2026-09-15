@@ -45,6 +45,7 @@ final class FavoritesList extends JList<FavoritesList.Row>
         final String title;
         final Icon icon;
         final boolean available;
+        String hotkey = "Not set";
 
         Row(String id, String title, Icon icon, boolean available)
         {
