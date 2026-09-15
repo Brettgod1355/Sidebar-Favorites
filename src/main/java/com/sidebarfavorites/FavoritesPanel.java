@@ -393,7 +393,7 @@ final class FavoritesPanel extends PluginPanel
         buttons.setVisible(editing);
         empty.setText(editing ? "Select a favorite and use Up / Down, or drag and drop to reorder. Click \u00d7 to remove."
             : saved.entries().isEmpty() ? "Use Add to choose panels. Your favorites will appear here."
-            : "Click a favorite to open its panel. Use Edit to organize your favorites.");
+            : "Click a favorite to open it. Use Edit to reorder or set custom hotkeys.");
         int selected = list.getSelectedIndex();
         favoriteKeyRow.setVisible(editable && editing && selected >= 0);
         if (favoriteKey != null && selected >= 0)
@@ -437,22 +437,17 @@ final class FavoritesPanel extends PluginPanel
         JPanel lines = container(null);
         lines.setLayout(new BoxLayout(lines, BoxLayout.Y_AXIS));
         lines.setOpaque(false);
-        JLabel name = label(row.title);
+        JLabel name = label(row.title + (row.available ? "" : " (unavailable)"));
+        name.setToolTipText(row.available ? row.title : row.title + " — unavailable; favorite saved");
         name.setIcon(row.icon);
         name.setIconTextGap(8);
         name.setForeground(row.available ? Color.WHITE : Color.GRAY);
         lines.add(name);
-        if (grip)
+        if (!adding)
         {
             JLabel shortcut = label("Hotkey: " + row.hotkey);
             shortcut.setForeground(Color.LIGHT_GRAY);
             lines.add(shortcut);
-        }
-        if (!row.available && !grip)
-        {
-            JLabel missing = label("Unavailable \u2014 favorite saved");
-            missing.setForeground(Color.GRAY);
-            lines.add(missing);
         }
         cell.add(lines, BorderLayout.CENTER);
         return cell;

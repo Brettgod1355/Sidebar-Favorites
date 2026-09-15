@@ -40,7 +40,8 @@ field and press your preferred combination; you can choose your own instead.
 Choose a combination that does not conflict with your other bindings.
 
 In **Edit**, select a favorite to assign or clear its own hotkey. Its binding is
-shown below its name. Click the key field and press a combination; Escape cancels.
+shown below its name on both the main screen and in Edit mode. The main-screen
+label is read-only; assigning or clearing a favorite shortcut requires Edit. Click the key field and press a combination; Escape cancels.
 Duplicate bindings within Favorites are rejected. If RuneLite's native settings
 assign the main hotkey to an existing favorite shortcut, the main shortcut takes
 precedence and that favorite shortcut is inactive until the conflict is resolved.
