@@ -35,11 +35,10 @@ import org.slf4j.LoggerFactory;
     tags = {"sidebar", "favorites", "favourites", "shortcuts", "panels"})
 public class SidebarFavoritesPlugin extends Plugin
 {
-    // RuneLite sorts ascending: the largest integer places this at the end.
-    static final int NAVIGATION_PRIORITY = Integer.MAX_VALUE;
     private static final Logger LOG = LoggerFactory.getLogger(SidebarFavoritesPlugin.class);
     @Inject private ClientToolbar toolbar;
     @Inject private ConfigManager configManager;
+    @Inject private SidebarFavoritesConfig config;
 
     private final AtomicBoolean refreshQueued = new AtomicBoolean();
     private final AtomicLong settingsRevision = new AtomicLong();
@@ -76,7 +75,7 @@ public class SidebarFavoritesPlugin extends Plugin
                 () -> withSession(session, this::reset));
             catalog = new PanelCatalog(panel.getWrappedPanel());
             navigation = NavigationButton.builder().tooltip("Sidebar Favorites")
-                .priority(NAVIGATION_PRIORITY).icon(icon()).panel(panel).build();
+                .priority(config.sidebarPosition().priority()).icon(icon()).panel(panel).build();
             toolbar.addNavigation(navigation);
             // ClientToolbar queues the insertion even when called on the Swing thread.
             scheduleRefresh();
@@ -96,6 +95,18 @@ public class SidebarFavoritesPlugin extends Plugin
         PanelCatalog.requireEdt();
         if (!active)
         {
+            return;
+        }
+        int priority = config.sidebarPosition().priority();
+        if (navigation.getPriority() != priority)
+        {
+            // Replace only our own button using the public toolbar API.
+            toolbar.removeNavigation(navigation);
+            navigation = NavigationButton.builder().tooltip("Sidebar Favorites")
+                .priority(priority).icon(navigation.getIcon()).panel(panel).build();
+            toolbar.addNavigation(navigation);
+            // Read the catalog after the queued remove/add operations finish.
+            scheduleRefresh();
             return;
         }
         long revision = settingsRevision.get();
@@ -225,7 +236,8 @@ public class SidebarFavoritesPlugin extends Plugin
     public void onConfigChanged(ConfigChanged event)
     {
         if (SidebarFavoritesConfig.GROUP.equals(event.getGroup())
-            && SidebarFavoritesConfig.FAVORITES.equals(event.getKey()))
+            && (SidebarFavoritesConfig.FAVORITES.equals(event.getKey())
+                || SidebarFavoritesConfig.POSITION.equals(event.getKey())))
         {
             settingsRevision.incrementAndGet();
             scheduleRefresh();

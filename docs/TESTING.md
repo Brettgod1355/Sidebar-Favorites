@@ -38,7 +38,8 @@ See the repository's Actions tab for the result of each commit.
 These checks still require a live RuneLite client. Results from Sidebar Organizer
 do not count as validation of this new plugin.
 
-- [ ] The gold star appears near the end of the native sidebar.
+- [ ] The gold star defaults to the bottom; Sidebar position switches it to Top and back immediately.
+- [ ] The position setting survives restart and follows configuration profile changes.
 - [ ] Add favorites shows enabled plugins that have sidebar panels.
 - [ ] Searching and adding several panels saves the intended shortcuts.
 - [ ] Clicking each favorite opens the correct original panel.
