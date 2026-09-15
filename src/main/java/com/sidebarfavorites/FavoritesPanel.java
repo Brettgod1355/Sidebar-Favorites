@@ -93,10 +93,12 @@ final class FavoritesPanel extends PluginPanel
         list.setBackground(ColorScheme.DARKER_GRAY_COLOR);
         list.setCellRenderer((items, row, index, selected, focused) -> render(row, selected, true));
         favorites.add(scroll(list), BorderLayout.CENTER);
-        JPanel buttons = container(new GridLayout(1, 3, 4, 0));
-        buttons.add(up);
-        buttons.add(down);
-        buttons.add(remove);
+        JPanel buttons = container(new BorderLayout(0, 4));
+        JPanel reorder = container(new GridLayout(1, 2, 4, 0));
+        reorder.add(up);
+        reorder.add(down);
+        buttons.add(reorder, BorderLayout.NORTH);
+        buttons.add(remove, BorderLayout.SOUTH);
         favorites.add(buttons, BorderLayout.SOUTH);
         list.addListSelectionListener(event -> updateControls());
         up.addActionListener(event -> moveSelected(move, -1));
