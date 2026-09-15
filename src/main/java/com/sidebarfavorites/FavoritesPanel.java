@@ -437,22 +437,17 @@ final class FavoritesPanel extends PluginPanel
         JPanel lines = container(null);
         lines.setLayout(new BoxLayout(lines, BoxLayout.Y_AXIS));
         lines.setOpaque(false);
-        JLabel name = label(row.title);
+        JLabel name = label(row.title + (row.available ? "" : " (unavailable)"));
+        name.setToolTipText(row.available ? row.title : row.title + " — unavailable; favorite saved");
         name.setIcon(row.icon);
         name.setIconTextGap(8);
         name.setForeground(row.available ? Color.WHITE : Color.GRAY);
         lines.add(name);
-        if (grip)
+        if (!adding)
         {
             JLabel shortcut = label("Hotkey: " + row.hotkey);
             shortcut.setForeground(Color.LIGHT_GRAY);
             lines.add(shortcut);
-        }
-        if (!row.available && !grip)
-        {
-            JLabel missing = label("Unavailable \u2014 favorite saved");
-            missing.setForeground(Color.GRAY);
-            lines.add(missing);
         }
         cell.add(lines, BorderLayout.CENTER);
         return cell;
