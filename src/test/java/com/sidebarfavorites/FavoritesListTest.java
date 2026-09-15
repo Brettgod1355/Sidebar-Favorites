@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class FavoritesListTest
 {
     @Test
-    public void nameClickOpensOnceAndGripClickOnlySelects() throws Exception
+    public void normalClickOpensAndEditClickSelectsWithoutOpening() throws Exception
     {
         SwingUtilities.invokeAndWait(() ->
         {
@@ -25,8 +25,10 @@ public class FavoritesListTest
             press(list, 50, 10);
             release(list, 50, 10);
             assertEquals(Arrays.asList("A"), opened);
-            press(list, 10, 60);
-            release(list, 10, 60);
+            list.setEditing(true, id -> {});
+            press(list, 50, 60);
+            release(list, 50, 60);
+            assertEquals("B", list.getSelectedValue().id);
             assertEquals(1, opened.size());
         });
     }
@@ -39,6 +41,7 @@ public class FavoritesListTest
             List<String> opened = new ArrayList<>();
             List<String> moved = new ArrayList<>();
             FavoritesList list = list(opened, moved);
+            list.setEditing(true, id -> {});
             press(list, 50, 10);
             drag(list, 50, 130);
             release(list, 50, 130);
@@ -60,6 +63,7 @@ public class FavoritesListTest
             List<String> opened = new ArrayList<>();
             List<String> moved = new ArrayList<>();
             FavoritesList list = list(opened, moved);
+            list.setEditing(true, id -> {});
             press(list, 50, 100);
             release(list, 50, 100);
             press(list, 50, 180);
@@ -70,6 +74,33 @@ public class FavoritesListTest
             list.setRows(Arrays.asList(new FavoritesList.Row("B", "Beta", null, true)));
             release(list, 50, 80);
             assertTrue(moved.isEmpty());
+        });
+    }
+
+    @Test
+    public void deleteOnlyWorksInEditModeAndLeavingEditCancelsDrag() throws Exception
+    {
+        SwingUtilities.invokeAndWait(() ->
+        {
+            List<String> opened = new ArrayList<>();
+            List<String> moved = new ArrayList<>();
+            List<String> removed = new ArrayList<>();
+            FavoritesList list = list(opened, moved);
+            press(list, 210, 10);
+            release(list, 210, 10);
+            assertEquals(Arrays.asList("A"), opened);
+            list.setEditing(true, removed::add);
+            press(list, 210, 100);
+            release(list, 210, 100);
+            assertEquals(Arrays.asList("C"), removed);
+            list.getActionMap().get("openFavorite").actionPerformed(null);
+            assertEquals(1, opened.size());
+            press(list, 50, 10);
+            drag(list, 50, 130);
+            list.setEditing(false, removed::add);
+            release(list, 50, 130);
+            assertTrue(moved.isEmpty());
+            assertEquals(1, opened.size());
         });
     }
 
