@@ -9,8 +9,14 @@ The build used the current RuneLite release dependency; release metadata at the
 time identified version `1.12.38`.
 
 The local workspace could not download the Gradle distribution, so the complete
-Gradle build/test results come from GitHub Actions. Live-client checks below have
-not yet been completed for Sidebar Favorites.
+Gradle build/test results come from GitHub Actions.
+
+On 2026-09-15, Windows development-client testing was reported as working well.
+The supplied [screenshot](images/sidebar-favorites.png) shows five favorites, the
+gold star near the end of the sidebar, and the corrected full-width Remove button.
+This is an overall user report; individual edge-case checks below remain open
+until explicitly confirmed. The footer fix also passed Java 11/17 CI in
+[run 34917986179](https://github.com/Brettgod1355/Sidebar-Favorites/actions/runs/34917986179).
 
 ## Automated coverage
 
