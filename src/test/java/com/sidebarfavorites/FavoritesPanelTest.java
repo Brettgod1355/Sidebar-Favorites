@@ -27,7 +27,7 @@ public class FavoritesPanelTest
                 new PanelCatalog.Entry("A", "Alpha", null, true),
                 new PanelCatalog.Entry("B", "Beta", null, true),
                 new PanelCatalog.Entry("C", "Gamma", null, false)), true, null);
-            button(panel, "Add favorites").doClick();
+            button(panel, "Add").doClick();
             JTextField search = find(panel, JTextField.class);
             search.setText("Alpha");
             assertFalse(button(panel, "Add selected").isEnabled());
@@ -37,7 +37,7 @@ public class FavoritesPanelTest
             assertTrue(button(panel, "Add selected").isEnabled());
             button(panel, "Add selected").doClick();
             assertEquals("B", added.get());
-            assertTrue(button(panel, "Add favorites").isVisible());
+            assertTrue(button(panel, "Add").isVisible());
         });
     }
 
@@ -60,7 +60,7 @@ public class FavoritesPanelTest
             button(panel, "Remove").doClick();
             assertEquals("A", removed.get());
             panel.update(Favorites.empty(), Arrays.asList(), false, "Unreadable favorites");
-            assertFalse(button(panel, "Add favorites").isEnabled());
+            assertFalse(button(panel, "Add").isEnabled());
             assertTrue(button(panel, "Reset saved favorites").isVisible());
         });
     }
@@ -75,13 +75,13 @@ public class FavoritesPanelTest
                 id -> {}, (id, gap) -> {}, () -> {});
             panel.update(Favorites.empty(), Arrays.asList(
                 new PanelCatalog.Entry("A", "Alpha", null, true)), true, null);
-            button(panel, "Add favorites").doClick();
+            button(panel, "Add").doClick();
             Container picker = find(panel, JTextField.class).getParent().getParent();
             javax.swing.JList<?> choices = find(picker, javax.swing.JList.class);
             choices.setSize(220, 200);
             clickPlus(choices, 210, 10);
             assertEquals("A", added.get());
-            assertNotNull(button(panel, "Back to favorites"));
+            assertNotNull(button(panel, "Back"));
             added.set(null);
             clickPlus(choices, 210, 150);
             assertNull(added.get());

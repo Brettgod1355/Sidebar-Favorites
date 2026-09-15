@@ -13,6 +13,15 @@ import net.runelite.client.config.ConfigItem;
 public interface SidebarFavoritesConfig extends Config
 {
     String GROUP = "sidebarfavorites";
+    String SHOW_INSTRUCTIONS = "showInstructions";
+
+    @ConfigItem(keyName = SHOW_INSTRUCTIONS, name = "Show instructions",
+        description = "Show the help text above your favorites", position = 1)
+    default boolean showInstructions()
+    {
+        return true;
+    }
+
     String POSITION = "sidebarPosition";
 
     enum SidebarPosition
