@@ -12,8 +12,9 @@ The local workspace could not download the Gradle distribution, so the complete
 Gradle build/test results come from GitHub Actions.
 
 On 2026-09-15, Windows development-client testing was reported as working well.
-The supplied [screenshot](images/sidebar-favorites.png) shows five favorites, the
-gold star near the end of the sidebar, and the corrected full-width Remove button.
+The original screenshot showed five favorites, the gold star near the end of the
+sidebar, and the corrected full-width Remove button. It has been replaced in the
+README by current screenshots of the main, Add, Edit, and settings views.
 This is an overall user report; individual edge-case checks below remain open
 until explicitly confirmed. The footer fix also passed Java 11/17 CI in
 [run 34917986179](https://github.com/Brettgod1355/Sidebar-Favorites/actions/runs/34917986179).
@@ -70,3 +71,11 @@ Live checks pending for this update:
 Saved favorites now use format version 2 with key codes and modifiers. Version 1
 is read without bindings and upgraded on the next edit. Older plugin versions
 will treat version 2 as unreadable rather than overwriting the saved list.
+
+## Current preview screenshots
+
+On 2026-09-15, the user reported the current experience as great and supplied
+four live-client screenshots for the README. They show the favorites list with
+hotkey labels and scrolling, the Add picker, Edit controls, and settings.
+Screenshots demonstrate those UI states; they do not independently establish
+every lifecycle, profile-switching, or hotkey behavior in the checklist.
