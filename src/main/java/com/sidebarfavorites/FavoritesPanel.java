@@ -393,7 +393,7 @@ final class FavoritesPanel extends PluginPanel
         buttons.setVisible(editing);
         empty.setText(editing ? "Select a favorite and use Up / Down, or drag and drop to reorder. Click \u00d7 to remove."
             : saved.entries().isEmpty() ? "Use Add to choose panels. Your favorites will appear here."
-            : "Click a favorite to open its panel. Use Edit to organize your favorites.");
+            : "Click a favorite to open it. Use Edit to reorder or set custom hotkeys.");
         int selected = list.getSelectedIndex();
         favoriteKeyRow.setVisible(editable && editing && selected >= 0);
         if (favoriteKey != null && selected >= 0)
