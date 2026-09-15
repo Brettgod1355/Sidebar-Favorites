@@ -51,7 +51,7 @@ final class FavoritesPanel extends PluginPanel
     private final DefaultListModel<FavoritesList.Row> availableModel = new DefaultListModel<>();
     private final JList<FavoritesList.Row> available = new JList<>(availableModel);
     private final JTextField search = new JTextField();
-    private final JButton toggle = new JButton("Add favorites");
+    private final JButton toggle = new JButton("Add");
     private final JButton addSelected = new JButton("Add selected");
     private final JButton up = new JButton("Up");
     private final JButton down = new JButton("Down");
@@ -61,9 +61,8 @@ final class FavoritesPanel extends PluginPanel
     private final JButton remove = new JButton("Remove");
     private final JButton repair = new JButton("Reset saved favorites");
     private final JTextArea status = text("");
-    private final JLabel heading = label("Favorites");
     private final JLabel pickerCount = label("");
-    private final JTextArea empty = text("Use Add favorites to choose panels. Your favorites will appear here.");
+    private final JTextArea empty = text("Use Add to choose panels. Your favorites will appear here.");
     private final CardLayout cards = new CardLayout();
     private final JPanel body = new JPanel(cards);
     private List<PanelCatalog.Entry> panels = Collections.emptyList();
@@ -90,9 +89,9 @@ final class FavoritesPanel extends PluginPanel
             refresh.run();
             showCard();
         });
-        JPanel header = container(new BorderLayout(0, 4));
-        header.add(toggle, BorderLayout.NORTH);
-        header.add(edit, BorderLayout.SOUTH);
+        JPanel header = container(new GridLayout(1, 0, 4, 0));
+        header.add(toggle);
+        header.add(edit);
         edit.addActionListener(event ->
         {
             editing = !editing;
@@ -104,10 +103,7 @@ final class FavoritesPanel extends PluginPanel
         add(header, BorderLayout.NORTH);
 
         JPanel favorites = container(new BorderLayout(0, 6));
-        JPanel intro = container(new BorderLayout(0, 6));
-        intro.add(heading, BorderLayout.NORTH);
-        intro.add(empty, BorderLayout.CENTER);
-        favorites.add(intro, BorderLayout.NORTH);
+        favorites.add(empty, BorderLayout.NORTH);
         list.setBackground(ColorScheme.DARKER_GRAY_COLOR);
         list.setCellRenderer((items, row, index, selected, focused) -> render(row, selected, editing, false));
         favorites.add(scroll(list), BorderLayout.CENTER);
@@ -251,8 +247,7 @@ final class FavoritesPanel extends PluginPanel
         }
         list.setRows(rows);
         list.setEnabled(readable);
-        heading.setText("Favorites (" + rows.size() + ")");
-        empty.setText(rows.isEmpty() ? "Use Add favorites to choose panels. Your favorites will appear here."
+        empty.setText(rows.isEmpty() ? "Use Add to choose panels. Your favorites will appear here."
             : "Click a name to open. Use the grip to select or drag a favorite.");
         status.setText(message == null ? "" : message);
         status.setVisible(message != null && !message.isEmpty());
@@ -263,11 +258,17 @@ final class FavoritesPanel extends PluginPanel
         repaint();
     }
 
+    void setShowInstructions(boolean show)
+    {
+        empty.setVisible(show);
+        revalidate();
+    }
+
     private void showCard()
     {
         cards.show(body, choosing ? "picker" : "favorites");
         updateControls();
-        toggle.setText(choosing ? "Back to favorites" : "Add favorites");
+        toggle.setText(choosing ? "Back" : "Add");
         if (choosing)
         {
             SwingUtilities.invokeLater(search::requestFocusInWindow);
@@ -315,7 +316,7 @@ final class FavoritesPanel extends PluginPanel
         edit.setText(editing ? "Done" : "Edit");
         buttons.setVisible(editing);
         empty.setText(editing ? "Select a favorite and use Up / Down, or drag and drop to reorder. Click \u00d7 to remove."
-            : saved.entries().isEmpty() ? "Use Add favorites to choose panels. Your favorites will appear here."
+            : saved.entries().isEmpty() ? "Use Add to choose panels. Your favorites will appear here."
             : "Click a favorite to open its panel. Use Edit to organize your favorites.");
         int selected = list.getSelectedIndex();
         up.setEnabled(editable && editing && selected > 0);

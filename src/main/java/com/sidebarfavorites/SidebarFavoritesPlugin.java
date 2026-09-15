@@ -125,6 +125,7 @@ public class SidebarFavoritesPlugin extends Plugin
             message = "Saved favorites could not be read. They have been left unchanged. You can reset them below.";
         }
         viewRevision = revision;
+        panel.setShowInstructions(config.showInstructions());
         panel.update(store.favorites(), entries, readable, message);
     }
 
@@ -237,7 +238,8 @@ public class SidebarFavoritesPlugin extends Plugin
     {
         if (SidebarFavoritesConfig.GROUP.equals(event.getGroup())
             && (SidebarFavoritesConfig.FAVORITES.equals(event.getKey())
-                || SidebarFavoritesConfig.POSITION.equals(event.getKey())))
+                || SidebarFavoritesConfig.POSITION.equals(event.getKey())
+                || SidebarFavoritesConfig.SHOW_INSTRUCTIONS.equals(event.getKey())))
         {
             settingsRevision.incrementAndGet();
             scheduleRefresh();
