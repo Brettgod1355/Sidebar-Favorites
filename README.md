@@ -11,9 +11,10 @@ and has not been approved by RuneLite.
 
 The screenshot shows the previous controls; the current version adds an **Edit / Done** mode.
 
-The gold star is configured to appear last among sidebar panel icons, making it
-easy to find and remember where to click. Another plugin using the same maximum
-priority can appear after it.
+The gold star defaults to the bottom of the sidebar panel icons, making it easy
+to find. In RuneLite plugin settings, set **Sidebar position** to **Top** or
+**Bottom**. Changes apply immediately and are saved in the active configuration
+profile. Icons with the same priority may affect the exact position.
 
 ## Using favorites
 
@@ -28,8 +29,8 @@ priority can appear after it.
 Favorites are saved in the active RuneLite configuration profile and survive
 restarts. If a plugin is disabled, its favorite stays in place as unavailable
 and becomes usable again when the panel returns. New panels can be added explicitly.
-The star uses `Integer.MAX_VALUE` priority because RuneLite sorts lower numbers
-first. Another plugin using the same value may sort after it by tooltip name.
+RuneLite sorts lower priorities first. The star uses `Integer.MIN_VALUE` for Top
+and `Integer.MAX_VALUE` for Bottom; ties are sorted by tooltip name.
 
 The picker includes currently available sidebar panels. Plugins without a panel,
 disabled plugins, and non-panel utility buttons cannot be added. Clicking a
