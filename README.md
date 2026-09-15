@@ -1,125 +1,83 @@
 # Sidebar Favorites
 
-Save and arrange shortcuts to your favorite RuneLite sidebar panels.
+**Your favorite panels. Your order. Your shortcuts.**
 
-An experimental development plugin. It is **not available in the Plugin Hub**
-and has not been approved by RuneLite.
+Keep the RuneLite panels you use most in one convenient list. Add favorites,
+arrange them your way, and open a panel with a click or a custom hotkey.
 
-## Preview
+Look for the **gold star** on the sidebar. It starts at the bottom so you always
+know where to find it, with a setting to move it to the top.
 
-![Sidebar Favorites with five shortcuts and full-width Remove button](docs/images/sidebar-favorites.png)
+![Main favorites list showing plugin icons, names, saved hotkeys, and a scrollbar](https://raw.githubusercontent.com/Brettgod1355/Sidebar-Favorites/main/docs/images/favorites-main.png)
 
-The screenshot shows the previous controls; the current version adds an **Edit / Done** mode.
+## Build your list
 
-The gold star defaults to the bottom of the sidebar panel icons, making it easy
-to find. In RuneLite plugin settings, set **Sidebar position** to **Top** or
-**Bottom**. Changes apply immediately and are saved in the active configuration
-profile. Icons with the same priority may affect the exact position.
+Click **Add**, search for a panel, and click its green **+**. The picker stays
+open so you can add several favorites in one go. Click **Back** when you're done.
 
-## Using favorites
+Your list shows each plugin's icon, name, and assigned hotkey. Click a favorite
+to open its original panel; use the gold star or your Open Favorites hotkey to return.
+Long lists scroll automatically.
 
-1. Open the gold star near the bottom of RuneLite's sidebar.
-2. Click **Add**, search for an available panel, and click its green **+**.
-   The picker stays open so you can add several favorites. **Add selected** also works.
-3. Click a favorite's name to open that plugin's original panel.
-4. Click **Edit** to organize favorites without opening their panels. Click a row to select it,
-   then use **Up / Down**, or drag and drop to reorder.
-5. In Edit mode, click the red **×** beside a favorite to remove it, or select it and click **Remove**.
-   Click **Done** to return to opening panels.
+![Add view with searchable panels and green plus buttons](https://raw.githubusercontent.com/Brettgod1355/Sidebar-Favorites/main/docs/images/favorites-add.png)
 
-The **Add** and **Edit** buttons share the top row with a settings gear. The gear
-opens a local settings view backed by the same RuneLite configuration values. Turn off **Show instructions**
-in plugin settings to hide the help text and leave more room for favorites. Both
-lists scroll vertically when their entries exceed the available space.
+## Make it your own
 
-Set **Open Favorites hotkey** in plugin settings to open the panel with a shortcut.
-It is unassigned by default and uses RuneLite's normal game-focus hotkey handling,
-including the login screen. Pressing it opens Favorites; it does not toggle it closed.
-Suggested shortcuts: **Ctrl+F**, **Ctrl+Shift+F**, or **Alt+F**. Click the hotkey
-field and press your preferred combination; you can choose your own instead.
-Choose a combination that does not conflict with your other bindings.
+Click **Edit** to organize your favorites without opening their panels.
 
-In **Edit**, select a favorite to assign or clear its own hotkey. Its binding is
-shown below its name on both the main screen and in Edit mode. The main-screen
-label is read-only; assigning or clearing a favorite shortcut requires Edit. Click the key field and press a combination; Escape cancels.
-Duplicate bindings within Favorites are rejected. If RuneLite's native settings
-assign the main hotkey to an existing favorite shortcut, the main shortcut takes
-precedence and that favorite shortcut is inactive until the conflict is resolved.
-Unavailable favorites retain their bindings but do not handle shortcuts. Removing
-a favorite removes its binding. Other plugins' shortcut conflicts cannot be detected.
+- **Reorder:** drag and drop, or select a favorite and use **Up / Down**.
+- **Remove:** click the red **×**, or select a favorite and click **Remove**.
+- **Assign a hotkey:** select a favorite, click its hotkey field below the list,
+  and press your preferred combination. **Clear** removes the binding; **Escape** cancels capture.
 
-Favorites are saved in the active RuneLite configuration profile and survive
-restarts. If a plugin is disabled, its favorite stays in place as unavailable
-and becomes usable again when the panel returns. New panels can be added explicitly.
-RuneLite sorts lower priorities first. The star uses `Integer.MIN_VALUE` for Top
-and `Integer.MAX_VALUE` for Bottom; ties are sorted by tooltip name.
+Click **Done** to return to your list. Hotkeys stay visible on the main screen,
+so you can learn them as you go. They can only be changed in Edit mode.
 
-The picker includes currently available sidebar panels. Plugins without a panel,
-disabled plugins, and non-panel utility buttons cannot be added. Clicking a
-favorite switches away from Favorites to the original panel; click the star to return.
+![Edit view showing drag grips, red remove buttons, movement controls, and the selected favorite's hotkey field](https://raw.githubusercontent.com/Brettgod1355/Sidebar-Favorites/main/docs/images/favorites-edit.png)
 
-## Development
+## Keep Favorites within reach
 
-Install JDK 17, clone this repository, and open its `build.gradle` in IntelliJ IDEA.
-Wait for Gradle import to finish. Run:
+The **gear** beside Add and Edit opens your settings. These are the same saved
+settings shown in RuneLite's plugin configuration, so you can use either interface.
 
-```sh
-./gradlew run
-```
+| Setting | What it does | Default |
+| --- | --- | --- |
+| **Sidebar position** | Place the gold star at the top or bottom of sidebar panel icons. | Bottom |
+| **Show instructions** | Hide the help text to leave more room for favorites. | On |
+| **Open Favorites hotkey** | Open your favorites list with a custom shortcut. | Not set |
 
-On Windows:
+Try **Ctrl+F**, **Ctrl+Shift+F**, or **Alt+F**, or choose your own combination.
+The main shortcut opens Favorites; individual shortcuts open their assigned panels.
+Hotkeys work while the game has keyboard focus, including at the login screen.
+Choose bindings that don't conflict with your other plugins.
 
-```powershell
-.\gradlew.bat run
-```
+![Settings view with sidebar position, instructions toggle, and customizable Open Favorites hotkey](https://raw.githubusercontent.com/Brettgod1355/Sidebar-Favorites/main/docs/images/favorites-settings.png)
 
-Or create an IntelliJ **Application** run configuration:
+## Saved the way you left it
 
-| Field | Value |
-| --- | --- |
-| Name | Sidebar Favorites Test |
-| JDK | 17 |
-| Module classpath | `sidebar-favorites.test` |
-| Main class | `com.sidebarfavorites.SidebarFavoritesLauncher` |
-| VM options | `-ea` |
-| Program arguments | `--developer-mode --debug` |
-| Working directory | This repository's checkout |
+Your favorites, order, and hotkeys are saved with your active **RuneLite configuration
+profile** and survive restarts. Disable a plugin and its favorite stays saved as
+unavailable; enable it again and the shortcut becomes usable when its panel returns.
+Removing a favorite also removes its hotkey.
 
-Enable **Sidebar Favorites** in the development client's plugin list. You can
-exercise panel shortcuts without logging into the game. The launcher uses the
-standard RuneLite data directory unless you configure a separate one.
+## Good to know
 
-Run automated tests and build the plugin JAR with:
+- Favorites opens existing sidebar panels. It does **not rearrange RuneLite's native sidebar icons**.
+- The Add picker lists enabled plugins with available sidebar panels. Plugins without
+  panels and utility buttons cannot be added.
+- Top and Bottom are priority preferences. Another icon with the same priority can affect the exact position.
+- Duplicate shortcut assignments within Favorites are rejected. If a conflicting main
+  shortcut is assigned through RuneLite's settings, the main shortcut takes precedence.
+  Unavailable favorites do not activate their shortcuts.
+- If a plugin changes its panel identity, remove the unavailable favorite and add it again.
 
-```sh
-./gradlew test build
-```
+## Feedback
 
-The default dependency is RuneLite's latest release. To reproduce a version:
+Found a bug or have an idea? [Open an issue](https://github.com/Brettgod1355/Sidebar-Favorites/issues).
 
-```sh
-./gradlew test build -PruneLiteVersion=1.12.38
-```
-
-## Compatibility
-
-The plugin discovers existing tabs through public Swing component methods and
-selects the original component when opening a favorite. It does not replace
-RuneLite's UI delegate, reorder native tabs, change other plugins' priorities,
-reparent their panels, or install handlers on the shared toolbar.
-
-This still depends on RuneLite's current Swing sidebar structure. It is not an
-official panel-discovery API. Future client changes may require an update.
-The implementation needs no changes to other plugins and uses no reflection,
-global input hooks, or networking.
-
-Panel class name plus tooltip forms the saved identifier. Renaming either can
-leave an old favorite unavailable; remove it and add the renamed panel. Duplicate
-identifiers are treated as unavailable rather than opening an arbitrary panel.
-See [testing](docs/TESTING.md) and [implementation notes](docs/DESIGN.md).
+**Availability:** not yet submitted to or approved for the RuneLite Plugin Hub.
 
 ## License
 
-[BSD 2-Clause](LICENSE). Others may use, modify, and redistribute the code,
-including commercially, while retaining the required notices and disclaimer.
-See [third-party notices](THIRD_PARTY_NOTICES.md) for reused work and build tooling.
+[BSD 2-Clause](https://github.com/Brettgod1355/Sidebar-Favorites/blob/main/LICENSE) — free to use, modify, and redistribute under the license terms.
+See [third-party notices](https://github.com/Brettgod1355/Sidebar-Favorites/blob/main/THIRD_PARTY_NOTICES.md) for attribution.

@@ -4,7 +4,9 @@
 
 Sidebar Favorites owns one ordinary `PluginPanel` and navigation button. All
 favorites sorting and dragging happen inside that panel. `ClientToolbar` is used
-only to add/remove our own navigation button. Its priority is `Integer.MAX_VALUE`.
+to add/remove our own navigation button and open it for hotkey navigation.
+Its priority is `Integer.MAX_VALUE` by default (Bottom), or `Integer.MIN_VALUE`
+when the user chooses Top.
 
 The catalog finds the `JTabbedPane` containing our wrapped panel through
 `SwingUtilities.getAncestorOfClass`. It checks for a right-hand RuneLite tabbed UI
@@ -21,14 +23,18 @@ Unknown structures and ambiguous identifiers are not opened.
 ## Persistence and lifecycle
 
 The ordered favorites are JSON under `sidebarfavorites.favoritesV1`, managed by
-RuneLite's `ConfigManager`. Only panel identifiers and display names are stored.
+RuneLite's `ConfigManager`. Format version 2 stores panel identifiers, display names, key codes, and
+modifier masks. Version 1 is read with unassigned hotkeys.
 Disabled panels retain their position. Reloading a profile replaces the displayed
 list; stale edits are refused if the loaded settings no longer match storage.
 Malformed or newer data is preserved until the user explicitly resets it.
 
 Config/profile events invalidate the current view before queuing its refresh.
 Callbacks from an earlier plugin session are ignored after shutdown/restart.
-Shutdown removes only our own navigation button and releases the panel/catalog.
+Shutdown removes our own navigation button, unregisters the main and favorite
+hotkey listeners, and releases the panel/catalog. The settings view uses the same
+ConfigManager keys as native configuration; per-favorite bindings stay in the
+favorites document.
 
 ## Reused work and review context
 
