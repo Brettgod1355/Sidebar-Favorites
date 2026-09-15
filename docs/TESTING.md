@@ -56,3 +56,17 @@ do not count as validation of this new plugin.
 
 The automated suite does not establish Plugin Hub approval or cover every
 third-party panel and operating system.
+
+## Settings view and individual hotkeys
+
+Live checks pending for this update:
+- [ ] Gear opens settings; changes in either interface appear in the other.
+- [ ] Profile changes update settings and cancel pending key capture.
+- [ ] Per-favorite keybind survives restart, move, and disable/re-enable.
+- [ ] Duplicate shortcuts are refused, including the main shortcut.
+- [ ] Native settings conflicts give the main shortcut precedence.
+- [ ] Removed/unavailable favorites do not consume shortcuts.
+
+Saved favorites now use format version 2 with key codes and modifiers. Version 1
+is read without bindings and upgraded on the next edit. Older plugin versions
+will treat version 2 as unreadable rather than overwriting the saved list.

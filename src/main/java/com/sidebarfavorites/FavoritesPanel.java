@@ -28,6 +28,9 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import net.runelite.client.config.Keybind;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -67,6 +70,14 @@ final class FavoritesPanel extends PluginPanel
     private final JPanel body = new JPanel(cards);
     private List<PanelCatalog.Entry> panels = Collections.emptyList();
     private Favorites saved = Favorites.empty();
+    private boolean settingsOpen;
+    private boolean syncing;
+    private final JComboBox<SidebarFavoritesConfig.SidebarPosition> position =
+        new JComboBox<>(SidebarFavoritesConfig.SidebarPosition.values());
+    private final JCheckBox instructions = new JCheckBox("Show instructions");
+    private KeybindEditor mainKey;
+    private KeybindEditor favoriteKey;
+    private final JPanel favoriteKeyRow = container(new BorderLayout(0, 4));
     private boolean choosing;
     private boolean editable;
     private long viewGeneration;
@@ -85,7 +96,8 @@ final class FavoritesPanel extends PluginPanel
         toggle.setFocusable(false);
         toggle.addActionListener(event ->
         {
-            choosing = !choosing;
+            if (settingsOpen) { settingsOpen = false; choosing = false; }
+            else { choosing = !choosing; }
             refresh.run();
             showCard();
         });
@@ -100,7 +112,24 @@ final class FavoritesPanel extends PluginPanel
             revalidate();
             repaint();
         });
-        add(header, BorderLayout.NORTH);
+        JPanel top = container(new BorderLayout(4, 0));
+        top.add(header, BorderLayout.CENTER);
+        JButton gear = new JButton("\u2699");
+        gear.setFont(new Font(Font.DIALOG, Font.PLAIN, 18));
+        gear.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        gear.setPreferredSize(new Dimension(28, 24));
+        gear.setToolTipText("Sidebar Favorites settings");
+        gear.getAccessibleContext().setAccessibleName("Sidebar Favorites settings");
+        gear.addActionListener(event ->
+        {
+            settingsOpen = !settingsOpen;
+            choosing = false;
+            list.cancelDrag();
+            refresh.run();
+            showCard();
+        });
+        top.add(gear, BorderLayout.EAST);
+        add(top, BorderLayout.NORTH);
 
         JPanel favorites = container(new BorderLayout(0, 6));
         favorites.add(empty, BorderLayout.NORTH);
@@ -111,7 +140,8 @@ final class FavoritesPanel extends PluginPanel
         reorder.add(up);
         reorder.add(down);
         buttons.add(reorder, BorderLayout.NORTH);
-        buttons.add(remove, BorderLayout.SOUTH);
+        buttons.add(remove, BorderLayout.CENTER);
+        buttons.add(favoriteKeyRow, BorderLayout.SOUTH);
         favorites.add(buttons, BorderLayout.SOUTH);
         list.addListSelectionListener(event -> updateControls());
         up.addActionListener(event -> moveSelected(move, -1));
@@ -244,6 +274,7 @@ final class FavoritesPanel extends PluginPanel
             PanelCatalog.Entry entry = byId.get(favorite.id);
             rows.add(new FavoritesList.Row(favorite.id, favorite.title,
                 entry == null ? null : entry.icon, entry != null && entry.available));
+            rows.get(rows.size() - 1).hotkey = favorite.hotkey.toString();
         }
         list.setRows(rows);
         list.setEnabled(readable);
@@ -258,6 +289,51 @@ final class FavoritesPanel extends PluginPanel
         repaint();
     }
 
+    void configure(BiConsumer<String, Object> setting, BiConsumer<String, Keybind> bind)
+    {
+        JPanel settings = container(new GridLayout(0, 1, 0, 6));
+        settings.add(label("Sidebar position"));
+        settings.add(position);
+        instructions.setOpaque(false);
+        settings.add(instructions);
+        settings.add(label("Open Favorites hotkey"));
+        mainKey = new KeybindEditor(key -> setting.accept("openHotkey", key));
+        settings.add(mainKey);
+        settings.add(text("Try Ctrl+F, Ctrl+Shift+F, or Alt+F, or choose your own shortcut."));
+        JPanel settingsPage = container(new BorderLayout());
+        settingsPage.add(settings, BorderLayout.NORTH);
+        body.add(scroll(settingsPage), "settings");
+        position.addActionListener(event ->
+        {
+            if (!syncing) { setting.accept(SidebarFavoritesConfig.POSITION, position.getSelectedItem()); }
+        });
+        instructions.addActionListener(event ->
+        {
+            if (!syncing) { setting.accept(SidebarFavoritesConfig.SHOW_INSTRUCTIONS, instructions.isSelected()); }
+        });
+        favoriteKey = new KeybindEditor(key ->
+        {
+            FavoritesList.Row row = list.getSelectedValue();
+            if (editable && editing && row != null) { bind.accept(row.id, key); }
+        });
+        favoriteKeyRow.add(label("Selected favorite hotkey"), BorderLayout.NORTH);
+        favoriteKeyRow.add(favoriteKey, BorderLayout.CENTER);
+        updateControls();
+    }
+
+    void syncSettings(SidebarFavoritesConfig config)
+    {
+        if (mainKey == null) { return; }
+        syncing = true;
+        try
+        {
+            position.setSelectedItem(config.sidebarPosition());
+            instructions.setSelected(config.showInstructions());
+            mainKey.setValue(config.openHotkey());
+        }
+        finally { syncing = false; }
+    }
+
     void setShowInstructions(boolean show)
     {
         empty.setVisible(show);
@@ -266,9 +342,9 @@ final class FavoritesPanel extends PluginPanel
 
     private void showCard()
     {
-        cards.show(body, choosing ? "picker" : "favorites");
+        cards.show(body, settingsOpen ? "settings" : choosing ? "picker" : "favorites");
         updateControls();
-        toggle.setText(choosing ? "Back" : "Add");
+        toggle.setText(choosing || settingsOpen ? "Back" : "Add");
         if (choosing)
         {
             SwingUtilities.invokeLater(search::requestFocusInWindow);
@@ -311,7 +387,7 @@ final class FavoritesPanel extends PluginPanel
 
     private void updateControls()
     {
-        edit.setVisible(!choosing);
+        edit.setVisible(!choosing && !settingsOpen);
         edit.setEnabled(editable);
         edit.setText(editing ? "Done" : "Edit");
         buttons.setVisible(editing);
@@ -319,11 +395,20 @@ final class FavoritesPanel extends PluginPanel
             : saved.entries().isEmpty() ? "Use Add to choose panels. Your favorites will appear here."
             : "Click a favorite to open its panel. Use Edit to organize your favorites.");
         int selected = list.getSelectedIndex();
+        favoriteKeyRow.setVisible(editable && editing && selected >= 0);
+        if (favoriteKey != null && selected >= 0)
+        {
+            String id = list.getSelectedValue().id;
+            for (Favorites.Entry entry : saved.entries())
+            {
+                if (entry.id.equals(id)) { favoriteKey.setValue(entry.hotkey); break; }
+            }
+        }
         up.setEnabled(editable && editing && selected > 0);
         down.setEnabled(editable && editing && selected >= 0 && selected < list.getModel().getSize() - 1);
         remove.setEnabled(editable && editing && selected >= 0);
         addSelected.setEnabled(editable && available.getSelectedIndex() >= 0);
-        toggle.setEnabled(editable || choosing);
+        toggle.setEnabled(editable || choosing || settingsOpen);
     }
 
     private static JPanel render(FavoritesList.Row row, boolean selected, boolean grip, boolean adding)
@@ -357,7 +442,13 @@ final class FavoritesPanel extends PluginPanel
         name.setIconTextGap(8);
         name.setForeground(row.available ? Color.WHITE : Color.GRAY);
         lines.add(name);
-        if (!row.available)
+        if (grip)
+        {
+            JLabel shortcut = label("Hotkey: " + row.hotkey);
+            shortcut.setForeground(Color.LIGHT_GRAY);
+            lines.add(shortcut);
+        }
+        if (!row.available && !grip)
         {
             JLabel missing = label("Unavailable \u2014 favorite saved");
             missing.setForeground(Color.GRAY);

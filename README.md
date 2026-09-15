@@ -27,7 +27,8 @@ profile. Icons with the same priority may affect the exact position.
 5. In Edit mode, click the red **×** beside a favorite to remove it, or select it and click **Remove**.
    Click **Done** to return to opening panels.
 
-The **Add** and **Edit** buttons share the top row. Turn off **Show instructions**
+The **Add** and **Edit** buttons share the top row with a settings gear. The gear
+opens a local settings view backed by the same RuneLite configuration values. Turn off **Show instructions**
 in plugin settings to hide the help text and leave more room for favorites. Both
 lists scroll vertically when their entries exceed the available space.
 
@@ -37,6 +38,14 @@ including the login screen. Pressing it opens Favorites; it does not toggle it c
 Suggested shortcuts: **Ctrl+F**, **Ctrl+Shift+F**, or **Alt+F**. Click the hotkey
 field and press your preferred combination; you can choose your own instead.
 Choose a combination that does not conflict with your other bindings.
+
+In **Edit**, select a favorite to assign or clear its own hotkey. Its binding is
+shown below its name. Click the key field and press a combination; Escape cancels.
+Duplicate bindings within Favorites are rejected. If RuneLite's native settings
+assign the main hotkey to an existing favorite shortcut, the main shortcut takes
+precedence and that favorite shortcut is inactive until the conflict is resolved.
+Unavailable favorites retain their bindings but do not handle shortcuts. Removing
+a favorite removes its binding. Other plugins' shortcut conflicts cannot be detected.
 
 Favorites are saved in the active RuneLite configuration profile and survive
 restarts. If a plugin is disabled, its favorite stays in place as unavailable

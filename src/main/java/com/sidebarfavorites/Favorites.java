@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import net.runelite.client.config.Keybind;
 
 /** Only ordered identifiers and display names are persisted, never live panels. */
 final class Favorites
@@ -27,9 +28,16 @@ final class Favorites
     {
         final String id;
         final String title;
+        final Keybind hotkey;
 
         Entry(String id, String title)
         {
+            this(id, title, Keybind.NOT_SET);
+        }
+
+        Entry(String id, String title, Keybind hotkey)
+        {
+            this.hotkey = hotkey;
             this.id = validText(id);
             this.title = validText(title);
         }
@@ -113,16 +121,39 @@ final class Favorites
         return new Favorites(next);
     }
 
+    Favorites bind(String id, Keybind key, Keybind main)
+    {
+        int index = indexOf(id);
+        if (index < 0) { return this; }
+        if (!Keybind.NOT_SET.equals(key))
+        {
+            if (key.equals(main)) { throw new IllegalArgumentException("That shortcut opens Favorites already."); }
+            for (Entry entry : entries)
+            {
+                if (!entry.id.equals(id) && key.equals(entry.hotkey))
+                {
+                    throw new IllegalArgumentException("That shortcut is assigned to " + entry.title + ".");
+                }
+            }
+        }
+        List<Entry> next = new ArrayList<>(entries);
+        Entry old = next.get(index);
+        next.set(index, new Entry(old.id, old.title, key));
+        return new Favorites(next);
+    }
+
     String encode()
     {
         JsonObject document = new JsonObject();
-        document.addProperty("version", 1);
+        document.addProperty("version", 2);
         JsonArray items = new JsonArray();
         for (Entry entry : entries)
         {
             JsonObject item = new JsonObject();
             item.addProperty("id", entry.id);
             item.addProperty("title", entry.title);
+            item.addProperty("keyCode", entry.hotkey.getKeyCode());
+            item.addProperty("modifiers", entry.hotkey.getModifiers());
             items.add(item);
         }
         document.add("favorites", items);
@@ -144,7 +175,7 @@ final class Favorites
             JsonObject document = new JsonParser().parse(json).getAsJsonObject();
             JsonElement version = document.get("version");
             if (version == null || !version.isJsonPrimitive()
-                || !version.getAsJsonPrimitive().isNumber() || !"1".equals(version.getAsString()))
+                || !version.getAsJsonPrimitive().isNumber() || !("1".equals(version.getAsString()) || "2".equals(version.getAsString())))
             {
                 throw new IllegalArgumentException("Unsupported favorites version.");
             }
@@ -158,7 +189,9 @@ final class Favorites
             for (JsonElement element : items)
             {
                 JsonObject item = element.getAsJsonObject();
-                Entry entry = new Entry(readString(item, "id"), readString(item, "title"));
+                Keybind key = "1".equals(version.getAsString()) ? Keybind.NOT_SET
+                    : new Keybind(readInt(item, "keyCode"), readInt(item, "modifiers"));
+                Entry entry = new Entry(readString(item, "id"), readString(item, "title"), key);
                 if (!ids.add(entry.id))
                 {
                     throw new IllegalArgumentException("Duplicate favorite.");
@@ -172,6 +205,18 @@ final class Favorites
             // Never overwrite unreadable or newer settings with an empty list.
             throw new IllegalArgumentException("Saved favorites could not be read.", ex);
         }
+    }
+
+    private static int readInt(JsonObject object, String key)
+    {
+        JsonElement value = object.get(key);
+        if (value == null || !value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber())
+        {
+            throw new IllegalArgumentException("Invalid hotkey.");
+        }
+        int result = new java.math.BigDecimal(value.getAsString()).intValueExact();
+        if (result < 0 || result > 65535) { throw new IllegalArgumentException("Invalid hotkey."); }
+        return result;
     }
 
     private static String readString(JsonObject object, String key)

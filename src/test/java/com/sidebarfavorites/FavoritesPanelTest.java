@@ -106,6 +106,26 @@ public class FavoritesPanelTest
         }
     }
 
+    @Test
+    public void settingsSyncDoesNotWriteAndUserChangesUseSharedKeys() throws Exception
+    {
+        SwingUtilities.invokeAndWait(() ->
+        {
+            java.util.Map<String, Object> writes = new java.util.HashMap<>();
+            FavoritesPanel panel = new FavoritesPanel(() -> {}, id -> {}, id -> {},
+                id -> {}, (id, gap) -> {}, () -> {});
+            panel.configure(writes::put, (id, key) -> {});
+            panel.syncSettings(new SidebarFavoritesConfig() {});
+            assertTrue(writes.isEmpty());
+            javax.swing.JComboBox<?> position = find(panel, javax.swing.JComboBox.class);
+            assertEquals(SidebarFavoritesConfig.SidebarPosition.BOTTOM, position.getSelectedItem());
+            position.setSelectedItem(SidebarFavoritesConfig.SidebarPosition.TOP);
+            assertEquals(SidebarFavoritesConfig.SidebarPosition.TOP, writes.get(SidebarFavoritesConfig.POSITION));
+            find(panel, javax.swing.JCheckBox.class).doClick();
+            assertEquals(false, writes.get(SidebarFavoritesConfig.SHOW_INSTRUCTIONS));
+        });
+    }
+
     private static JButton button(Container root, String text)
     {
         for (Component child : root.getComponents())
