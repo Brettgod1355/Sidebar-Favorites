@@ -27,6 +27,9 @@ import javax.swing.SwingUtilities;
 final class FavoritesList extends JList<FavoritesList.Row>
 {
     static final int GRIP_WIDTH = 22;
+    static final int REMOVE_WIDTH = 30;
+    private boolean editing;
+    private Consumer<String> remove = id -> {};
     private static final int DRAG_DISTANCE = 6;
     private final DefaultListModel<Row> rows = new DefaultListModel<>();
     private final Consumer<String> open;
@@ -60,7 +63,7 @@ final class FavoritesList extends JList<FavoritesList.Row>
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setFixedCellHeight(46);
         getAccessibleContext().setAccessibleName("Favorite panels");
-        setToolTipText("Click a panel to open it. Select or drag its grip to change the order.");
+        setToolTipText("Click a panel to open it. Use Edit to organize favorites.");
         MouseAdapter mouse = new MouseAdapter()
         {
             @Override
@@ -71,13 +74,14 @@ final class FavoritesList extends JList<FavoritesList.Row>
                 {
                     pressed = at(event.getPoint());
                     origin = event.getPoint();
+                    if (pressed != null) { setSelectedValue(pressed, false); }
                 }
             }
 
             @Override
             public void mouseDragged(MouseEvent event)
             {
-                if (pressed == null || !isEnabled())
+                if (pressed == null || !isEnabled() || !editing || origin.x >= getWidth() - REMOVE_WIDTH)
                 {
                     return;
                 }
@@ -97,7 +101,7 @@ final class FavoritesList extends JList<FavoritesList.Row>
                 Row source = pressed;
                 boolean wasDragging = dragging;
                 int target = destination;
-                boolean onGrip = origin != null && origin.x < GRIP_WIDTH;
+                boolean onRemove = editing && origin != null && origin.x >= getWidth() - REMOVE_WIDTH;
                 cancelDrag();
                 if (!isEnabled() || !SwingUtilities.isLeftMouseButton(event) || source == null)
                 {
@@ -110,9 +114,16 @@ final class FavoritesList extends JList<FavoritesList.Row>
                         move.accept(source.id, target);
                     }
                 }
-                else if (!onGrip && at(event.getPoint()) == source && source.available)
+                else if (at(event.getPoint()) == source)
                 {
-                    open.accept(source.id);
+                    if (editing && onRemove && event.getX() >= getWidth() - REMOVE_WIDTH)
+                    {
+                        remove.accept(source.id);
+                    }
+                    else if (!editing && source.available)
+                    {
+                        open.accept(source.id);
+                    }
                 }
             }
         };
@@ -125,12 +136,22 @@ final class FavoritesList extends JList<FavoritesList.Row>
             public void actionPerformed(ActionEvent event)
             {
                 Row row = getSelectedValue();
-                if (isEnabled() && row != null && row.available)
+                if (isEnabled() && !editing && row != null && row.available)
                 {
                     open.accept(row.id);
                 }
             }
         });
+    }
+
+    void setEditing(boolean value, Consumer<String> removeFavorite)
+    {
+        cancelDrag();
+        editing = value;
+        remove = removeFavorite;
+        setToolTipText(value ? "Select a favorite to move it, drag to reorder, or click \u00d7 to remove."
+            : "Click a panel to open it. Use Edit to organize favorites.");
+        repaint();
     }
 
     void setRows(List<Row> next)

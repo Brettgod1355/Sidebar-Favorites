@@ -53,6 +53,9 @@ public class FavoritesPanelTest
             FavoritesList list = find(panel, FavoritesList.class);
             assertEquals(1, list.getModel().getSize());
             assertFalse(list.getModel().getElementAt(0).available);
+            assertFalse(button(panel, "Remove").isEnabled());
+            button(panel, "Edit").doClick();
+            assertNotNull(button(panel, "Done"));
             list.setSelectedIndex(0);
             button(panel, "Remove").doClick();
             assertEquals("A", removed.get());

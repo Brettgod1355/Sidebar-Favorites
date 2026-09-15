@@ -51,6 +51,9 @@ final class FavoritesPanel extends PluginPanel
     private final JButton addSelected = new JButton("Add selected");
     private final JButton up = new JButton("Up");
     private final JButton down = new JButton("Down");
+    private final JButton edit = new JButton("Edit");
+    private final JPanel buttons = container(new BorderLayout(0, 4));
+    private boolean editing;
     private final JButton remove = new JButton("Remove");
     private final JButton repair = new JButton("Reset saved favorites");
     private final JTextArea status = text("");
@@ -83,7 +86,18 @@ final class FavoritesPanel extends PluginPanel
             refresh.run();
             showCard();
         });
-        add(toggle, BorderLayout.NORTH);
+        JPanel header = container(new BorderLayout(0, 4));
+        header.add(toggle, BorderLayout.NORTH);
+        header.add(edit, BorderLayout.SOUTH);
+        edit.addActionListener(event ->
+        {
+            editing = !editing;
+            list.setEditing(editing, removeFavorite);
+            updateControls();
+            revalidate();
+            repaint();
+        });
+        add(header, BorderLayout.NORTH);
 
         JPanel favorites = container(new BorderLayout(0, 6));
         JPanel intro = container(new BorderLayout(0, 6));
@@ -91,9 +105,8 @@ final class FavoritesPanel extends PluginPanel
         intro.add(empty, BorderLayout.CENTER);
         favorites.add(intro, BorderLayout.NORTH);
         list.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        list.setCellRenderer((items, row, index, selected, focused) -> render(row, selected, true));
+        list.setCellRenderer((items, row, index, selected, focused) -> render(row, selected, editing));
         favorites.add(scroll(list), BorderLayout.CENTER);
-        JPanel buttons = container(new BorderLayout(0, 4));
         JPanel reorder = container(new GridLayout(1, 2, 4, 0));
         reorder.add(up);
         reorder.add(down);
@@ -105,7 +118,7 @@ final class FavoritesPanel extends PluginPanel
         down.addActionListener(event -> moveSelected(move, 1));
         remove.addActionListener(event ->
         {
-            if (editable && list.getSelectedValue() != null)
+            if (editable && editing && list.getSelectedValue() != null)
             {
                 removeFavorite.accept(list.getSelectedValue().id);
             }
@@ -215,6 +228,7 @@ final class FavoritesPanel extends PluginPanel
     private void showCard()
     {
         cards.show(body, choosing ? "picker" : "favorites");
+        updateControls();
         toggle.setText(choosing ? "Back to favorites" : "Add favorites");
         if (choosing)
         {
@@ -249,7 +263,7 @@ final class FavoritesPanel extends PluginPanel
     private void moveSelected(BiConsumer<String, Integer> move, int offset)
     {
         FavoritesList.Row row = list.getSelectedValue();
-        if (editable && row != null)
+        if (editable && editing && row != null)
         {
             int index = list.getSelectedIndex();
             move.accept(row.id, offset < 0 ? index - 1 : index + 2);
@@ -258,10 +272,17 @@ final class FavoritesPanel extends PluginPanel
 
     private void updateControls()
     {
+        edit.setVisible(!choosing);
+        edit.setEnabled(editable);
+        edit.setText(editing ? "Done" : "Edit");
+        buttons.setVisible(editing);
+        empty.setText(editing ? "Select a favorite and use Up / Down, or drag and drop to reorder. Click \u00d7 to remove."
+            : saved.entries().isEmpty() ? "Use Add favorites to choose panels. Your favorites will appear here."
+            : "Click a favorite to open its panel. Use Edit to organize your favorites.");
         int selected = list.getSelectedIndex();
-        up.setEnabled(editable && selected > 0);
-        down.setEnabled(editable && selected >= 0 && selected < list.getModel().getSize() - 1);
-        remove.setEnabled(editable && selected >= 0);
+        up.setEnabled(editable && editing && selected > 0);
+        down.setEnabled(editable && editing && selected >= 0 && selected < list.getModel().getSize() - 1);
+        remove.setEnabled(editable && editing && selected >= 0);
         addSelected.setEnabled(editable && available.getSelectedIndex() >= 0);
         toggle.setEnabled(editable || choosing);
     }
@@ -270,7 +291,7 @@ final class FavoritesPanel extends PluginPanel
     {
         JPanel cell = container(new BorderLayout(6, 0));
         cell.setBackground(selected ? new Color(65, 69, 74) : ColorScheme.DARKER_GRAY_COLOR);
-        cell.setBorder(BorderFactory.createEmptyBorder(5, grip ? 0 : 8, 5, 6));
+        cell.setBorder(BorderFactory.createEmptyBorder(5, grip ? 0 : 8, 5, grip ? 0 : 6));
         if (grip)
         {
             JLabel handle = label("\u2261");
@@ -278,6 +299,11 @@ final class FavoritesPanel extends PluginPanel
             handle.setPreferredSize(new Dimension(FavoritesList.GRIP_WIDTH, 20));
             handle.setForeground(Color.GRAY);
             cell.add(handle, BorderLayout.WEST);
+            JLabel delete = label("\u00d7");
+            delete.setHorizontalAlignment(JLabel.CENTER);
+            delete.setPreferredSize(new Dimension(FavoritesList.REMOVE_WIDTH, 20));
+            delete.setToolTipText("Remove favorite");
+            cell.add(delete, BorderLayout.EAST);
         }
         JPanel lines = container(null);
         lines.setLayout(new BoxLayout(lines, BoxLayout.Y_AXIS));

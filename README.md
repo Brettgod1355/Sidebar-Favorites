@@ -9,6 +9,8 @@ and has not been approved by RuneLite.
 
 ![Sidebar Favorites with five shortcuts and full-width Remove button](docs/images/sidebar-favorites.png)
 
+The screenshot shows the previous controls; the current version adds an **Edit / Done** mode.
+
 The gold star is configured to appear last among sidebar panel icons, making it
 easy to find and remember where to click. Another plugin using the same maximum
 priority can appear after it.
@@ -18,8 +20,10 @@ priority can appear after it.
 1. Open the gold star near the bottom of RuneLite's sidebar.
 2. Click **Add favorites**, search for an available panel, and click **Add selected**.
 3. Click a favorite's name to open that plugin's original panel.
-4. Drag a favorite to move it. Alternatively, select its grip and use **Up** or **Down**.
-5. Select a grip and click **Remove** to remove the shortcut.
+4. Click **Edit** to organize favorites without opening their panels. Click a row to select it,
+   then use **Up / Down**, or drag and drop to reorder.
+5. In Edit mode, click **×** beside a favorite to remove it, or select it and click **Remove**.
+   Click **Done** to return to opening panels.
 
 Favorites are saved in the active RuneLite configuration profile and survive
 restarts. If a plugin is disabled, its favorite stays in place as unavailable
