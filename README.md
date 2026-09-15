@@ -34,6 +34,8 @@ lists scroll vertically when their entries exceed the available space.
 Set **Open Favorites hotkey** in plugin settings to open the panel with a shortcut.
 It is unassigned by default and uses RuneLite's normal game-focus hotkey handling,
 including the login screen. Pressing it opens Favorites; it does not toggle it closed.
+Suggested shortcuts: **Ctrl+F**, **Ctrl+Shift+F**, or **Alt+F**. Click the hotkey
+field and press your preferred combination; you can choose your own instead.
 Choose a combination that does not conflict with your other bindings.
 
 Favorites are saved in the active RuneLite configuration profile and survive
