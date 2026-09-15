@@ -5,6 +5,14 @@ Save and arrange shortcuts to your favorite RuneLite sidebar panels.
 An experimental development plugin. It is **not available in the Plugin Hub**
 and has not been approved by RuneLite.
 
+## Preview
+
+![Sidebar Favorites with five shortcuts and full-width Remove button](docs/images/sidebar-favorites.png)
+
+The gold star is configured to appear last among sidebar panel icons, making it
+easy to find and remember where to click. Another plugin using the same maximum
+priority can appear after it.
+
 ## Using favorites
 
 1. Open the gold star near the bottom of RuneLite's sidebar.
