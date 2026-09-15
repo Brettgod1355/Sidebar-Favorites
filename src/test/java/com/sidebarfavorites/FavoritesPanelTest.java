@@ -65,6 +65,47 @@ public class FavoritesPanelTest
         });
     }
 
+    @Test
+    public void plusAddsWithoutLeavingPickerAndEmptySpaceDoesNothing() throws Exception
+    {
+        SwingUtilities.invokeAndWait(() ->
+        {
+            AtomicReference<String> added = new AtomicReference<>();
+            FavoritesPanel panel = new FavoritesPanel(() -> {}, id -> {}, added::set,
+                id -> {}, (id, gap) -> {}, () -> {});
+            panel.update(Favorites.empty(), Arrays.asList(
+                new PanelCatalog.Entry("A", "Alpha", null, true)), true, null);
+            button(panel, "Add favorites").doClick();
+            Container picker = find(panel, JTextField.class).getParent().getParent();
+            javax.swing.JList<?> choices = find(picker, javax.swing.JList.class);
+            choices.setSize(220, 200);
+            clickPlus(choices, 210, 10);
+            assertEquals("A", added.get());
+            assertNotNull(button(panel, "Back to favorites"));
+            added.set(null);
+            clickPlus(choices, 210, 150);
+            assertNull(added.get());
+            clickPlus(choices, 50, 10);
+            assertNull(added.get());
+        });
+    }
+
+    private static void clickPlus(javax.swing.JList<?> list, int x, int y)
+    {
+        for (java.awt.event.MouseListener listener : list.getMouseListeners())
+        {
+            if (listener.getClass().getName().startsWith(FavoritesPanel.class.getName() + "$"))
+            {
+                listener.mousePressed(new java.awt.event.MouseEvent(list,
+                    java.awt.event.MouseEvent.MOUSE_PRESSED, 1, 0, x, y, 1, false,
+                    java.awt.event.MouseEvent.BUTTON1));
+                listener.mouseReleased(new java.awt.event.MouseEvent(list,
+                    java.awt.event.MouseEvent.MOUSE_RELEASED, 2, 0, x, y, 1, false,
+                    java.awt.event.MouseEvent.BUTTON1));
+            }
+        }
+    }
+
     private static JButton button(Container root, String text)
     {
         for (Component child : root.getComponents())

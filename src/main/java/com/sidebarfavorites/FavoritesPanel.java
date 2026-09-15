@@ -10,6 +10,10 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,7 +109,7 @@ final class FavoritesPanel extends PluginPanel
         intro.add(empty, BorderLayout.CENTER);
         favorites.add(intro, BorderLayout.NORTH);
         list.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        list.setCellRenderer((items, row, index, selected, focused) -> render(row, selected, editing));
+        list.setCellRenderer((items, row, index, selected, focused) -> render(row, selected, editing, false));
         favorites.add(scroll(list), BorderLayout.CENTER);
         JPanel reorder = container(new GridLayout(1, 2, 4, 0));
         reorder.add(up);
@@ -135,9 +139,43 @@ final class FavoritesPanel extends PluginPanel
         available.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         available.setFixedCellHeight(46);
         available.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        available.setCellRenderer((items, row, index, selected, focused) -> render(row, selected, false));
+        available.setCellRenderer((items, row, index, selected, focused) -> render(row, selected, false, true));
         available.getAccessibleContext().setAccessibleName("Available panels");
         available.addListSelectionListener(event -> updateControls());
+        available.setToolTipText("Click the green + to add a favorite.");
+        available.addMouseListener(new MouseAdapter()
+        {
+            private FavoritesList.Row pressed;
+            private long pressedView;
+
+            private FavoritesList.Row actionAt(MouseEvent event)
+            {
+                int index = available.locationToIndex(event.getPoint());
+                Rectangle bounds = index < 0 ? null : available.getCellBounds(index, index);
+                return bounds != null && bounds.contains(event.getPoint())
+                    && event.getX() >= bounds.x + bounds.width - FavoritesList.REMOVE_WIDTH
+                    ? availableModel.get(index) : null;
+            }
+
+            @Override
+            public void mousePressed(MouseEvent event)
+            {
+                pressed = SwingUtilities.isLeftMouseButton(event) ? actionAt(event) : null;
+                pressedView = viewGeneration;
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent event)
+            {
+                FavoritesList.Row source = pressed;
+                pressed = null;
+                if (editable && choosing && SwingUtilities.isLeftMouseButton(event)
+                    && pressedView == viewGeneration && source != null && actionAt(event) == source)
+                {
+                    add.accept(source.id);
+                }
+            }
+        });
         picker.add(scroll(available), BorderLayout.CENTER);
         addSelected.addActionListener(event ->
         {
@@ -287,11 +325,11 @@ final class FavoritesPanel extends PluginPanel
         toggle.setEnabled(editable || choosing);
     }
 
-    private static JPanel render(FavoritesList.Row row, boolean selected, boolean grip)
+    private static JPanel render(FavoritesList.Row row, boolean selected, boolean grip, boolean adding)
     {
         JPanel cell = container(new BorderLayout(6, 0));
         cell.setBackground(selected ? new Color(65, 69, 74) : ColorScheme.DARKER_GRAY_COLOR);
-        cell.setBorder(BorderFactory.createEmptyBorder(5, grip ? 0 : 8, 5, grip ? 0 : 6));
+        cell.setBorder(BorderFactory.createEmptyBorder(5, grip ? 0 : 8, 5, grip || adding ? 0 : 6));
         if (grip)
         {
             JLabel handle = label("\u2261");
@@ -299,11 +337,16 @@ final class FavoritesPanel extends PluginPanel
             handle.setPreferredSize(new Dimension(FavoritesList.GRIP_WIDTH, 20));
             handle.setForeground(Color.GRAY);
             cell.add(handle, BorderLayout.WEST);
-            JLabel delete = label("\u00d7");
-            delete.setHorizontalAlignment(JLabel.CENTER);
-            delete.setPreferredSize(new Dimension(FavoritesList.REMOVE_WIDTH, 20));
-            delete.setToolTipText("Remove favorite");
-            cell.add(delete, BorderLayout.EAST);
+        }
+        if (grip || adding)
+        {
+            JLabel action = label(adding ? "+" : "\u00d7");
+            action.setHorizontalAlignment(JLabel.CENTER);
+            action.setPreferredSize(new Dimension(FavoritesList.REMOVE_WIDTH, 28));
+            action.setFont(action.getFont().deriveFont(Font.BOLD, 24f));
+            action.setForeground(adding ? new Color(90, 210, 110) : new Color(245, 90, 90));
+            action.setToolTipText(adding ? "Add favorite" : "Remove favorite");
+            cell.add(action, BorderLayout.EAST);
         }
         JPanel lines = container(null);
         lines.setLayout(new BoxLayout(lines, BoxLayout.Y_AXIS));

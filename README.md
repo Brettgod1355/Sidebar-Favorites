@@ -19,11 +19,12 @@ profile. Icons with the same priority may affect the exact position.
 ## Using favorites
 
 1. Open the gold star near the bottom of RuneLite's sidebar.
-2. Click **Add favorites**, search for an available panel, and click **Add selected**.
+2. Click **Add favorites**, search for an available panel, and click its green **+**.
+   The picker stays open so you can add several favorites. **Add selected** also works.
 3. Click a favorite's name to open that plugin's original panel.
 4. Click **Edit** to organize favorites without opening their panels. Click a row to select it,
    then use **Up / Down**, or drag and drop to reorder.
-5. In Edit mode, click **×** beside a favorite to remove it, or select it and click **Remove**.
+5. In Edit mode, click the red **×** beside a favorite to remove it, or select it and click **Remove**.
    Click **Done** to return to opening panels.
 
 Favorites are saved in the active RuneLite configuration profile and survive
