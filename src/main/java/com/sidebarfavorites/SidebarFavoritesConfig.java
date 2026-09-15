@@ -8,6 +8,7 @@ package com.sidebarfavorites;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Keybind;
 
 @ConfigGroup(SidebarFavoritesConfig.GROUP)
 public interface SidebarFavoritesConfig extends Config
@@ -20,6 +21,13 @@ public interface SidebarFavoritesConfig extends Config
     default boolean showInstructions()
     {
         return true;
+    }
+
+    @ConfigItem(keyName = "openHotkey", name = "Open Favorites hotkey",
+        description = "Open Sidebar Favorites while the game has keyboard focus", position = 2)
+    default Keybind openHotkey()
+    {
+        return Keybind.NOT_SET;
     }
 
     String POSITION = "sidebarPosition";
