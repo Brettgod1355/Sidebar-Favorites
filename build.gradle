@@ -31,14 +31,6 @@ test {
     testLogging { events 'passed', 'skipped', 'failed' }
 }
 
-// The Plugin Hub packages through its own task, not this build's `jar` task, so a
-// `jar {}` customisation never reaches the distributed artifact. Feeding the notices
-// through processResources puts them in every jar, which BSD 2-Clause requires of
-// binary redistributions.
-processResources {
-    from(['LICENSE', 'THIRD_PARTY_NOTICES.md']) { into 'META-INF' }
-}
-
 tasks.register('run', JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'com.sidebarfavorites.SidebarFavoritesLauncher'
