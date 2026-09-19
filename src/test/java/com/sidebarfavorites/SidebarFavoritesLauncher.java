@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: BSD-2-Clause
- * Copyright (c) 2026, Sidebar Favorites contributors
+ * Copyright (c) 2026, Brettgod1355 <github.com/Brettgod1355>
  * See LICENSE for redistribution conditions and disclaimer.
  */
 package com.sidebarfavorites;
