@@ -126,6 +126,26 @@ public class FavoritesPanelTest
         });
     }
 
+    @Test
+    public void firstOpenDoesNotDemandATallerWindow() throws Exception
+    {
+        SwingUtilities.invokeAndWait(() ->
+        {
+            FavoritesPanel panel = new FavoritesPanel(() -> {}, id -> {}, id -> {},
+                id -> {}, (id, gap) -> {}, () -> {});
+            panel.configure((key, value) -> {}, (id, key) -> {});
+            panel.setShowInstructions(true);
+            panel.update(Favorites.empty().add("A", "Alpha").add("B", "Beta"), Arrays.asList(
+                new PanelCatalog.Entry("A", "Alpha", null, true)), true, null);
+            // RuneLite grows the client to fit the panel's minimum size. When Favorites is the
+            // first panel opened, that is asked before anything has laid the panel out.
+            int minimum = panel.getMinimumSize().height;
+            int preferred = panel.getPreferredSize().height;
+            assertTrue("minimum height " + minimum + " exceeds preferred height " + preferred,
+                minimum <= preferred);
+        });
+    }
+
     private static JButton button(Container root, String text)
     {
         for (Component child : root.getComponents())
