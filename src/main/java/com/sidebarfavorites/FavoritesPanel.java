@@ -478,6 +478,10 @@ final class FavoritesPanel extends PluginPanel
         area.setOpaque(false);
         area.setBorder(null);
         area.setFont(new JLabel().getFont());
+        // Until it is first laid out, a wrapping text area has no width and reports one word
+        // per line as its minimum height. RuneLite grows the client to the open panel's minimum,
+        // so that stretched the window down the screen the first time Favorites opened.
+        area.setMinimumSize(new Dimension(0, 0));
         return area;
     }
 

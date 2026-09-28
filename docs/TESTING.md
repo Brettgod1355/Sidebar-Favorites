@@ -42,6 +42,8 @@ do not count as validation of this new plugin.
 - [ ] The gold star defaults to the bottom; Sidebar position switches it to Top and back immediately.
 - [ ] The position setting survives restart and follows configuration profile changes.
 - [ ] Assign/change/clear Open Favorites hotkey; verify opening from the game and login screen, and no handling after disabling the plugin.
+- [ ] Hotkeys work after clicking into another sidebar panel, but not while typing in its text box or recording a shortcut.
+- [ ] With the client at the top of the screen, opening Favorites as the first panel after launch does not stretch the window.
 - [ ] Add favorites shows enabled plugins that have sidebar panels.
 - [ ] Searching and adding several panels saves the intended shortcuts.
 - [ ] Clicking each favorite opens the correct original panel.
