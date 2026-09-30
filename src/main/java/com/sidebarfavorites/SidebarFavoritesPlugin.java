@@ -8,7 +8,6 @@ package com.sidebarfavorites;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.KeyboardFocusManager;
 import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
@@ -23,7 +22,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.UnaryOperator;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
-import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -48,10 +46,8 @@ public class SidebarFavoritesPlugin extends Plugin
     @Inject private ConfigManager configManager;
     @Inject private SidebarFavoritesConfig config;
     @Inject private KeyManager keyManager;
-    @Inject private Client client;
     private HotkeyListener openHotkey;
     private final List<HotkeyListener> favoriteListeners = new ArrayList<>();
-    private WindowHotkeys windowHotkeys;
     private Map<Keybind, String> registeredKeys = Collections.emptyMap();
     private long bindingRevision = -1;
 
@@ -111,8 +107,6 @@ public class SidebarFavoritesPlugin extends Plugin
             };
             openHotkey.setEnabledOnLoginScreen(true);
             keyManager.registerKeyListener(openHotkey);
-            windowHotkeys = new WindowHotkeys(client::getCanvas, this::hotkeyListeners);
-            KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(windowHotkeys);
             // ClientToolbar queues the insertion even when called on the Swing thread.
             scheduleRefresh();
         });
@@ -227,14 +221,6 @@ public class SidebarFavoritesPlugin extends Plugin
             keyManager.registerKeyListener(listener);
             favoriteListeners.add(listener);
         }
-    }
-
-    private List<HotkeyListener> hotkeyListeners()
-    {
-        List<HotkeyListener> listeners = new ArrayList<>();
-        if (openHotkey != null) { listeners.add(openHotkey); }
-        listeners.addAll(favoriteListeners);
-        return listeners;
     }
 
     private void clearFavoriteHotkeys()
@@ -381,11 +367,6 @@ public class SidebarFavoritesPlugin extends Plugin
         onEdt(() ->
         {
             active = false;
-            if (windowHotkeys != null)
-            {
-                KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(windowHotkeys);
-                windowHotkeys = null;
-            }
             clearFavoriteHotkeys();
             if (openHotkey != null)
             {

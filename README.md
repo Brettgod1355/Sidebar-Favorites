@@ -48,8 +48,7 @@ settings shown in RuneLite's plugin configuration, so you can use either interfa
 
 Try **Ctrl+F**, **Ctrl+Shift+F**, or **Alt+F**, or choose your own combination.
 The main shortcut opens Favorites; individual shortcuts open their assigned panels.
-Hotkeys work anywhere in the RuneLite window, including at the login screen and while
-another sidebar panel is open. They pause while you type in a text box or record a shortcut.
+Hotkeys work while the game has keyboard focus, including at the login screen.
 Choose bindings that don't conflict with your other plugins.
 
 ![Settings view with sidebar position, instructions toggle, and customizable Open Favorites hotkey](https://raw.githubusercontent.com/Brettgod1355/Sidebar-Favorites/main/docs/images/favorites-settings.png)
