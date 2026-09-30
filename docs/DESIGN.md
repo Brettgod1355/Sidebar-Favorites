@@ -31,15 +31,8 @@ Malformed or newer data is preserved until the user explicitly resets it.
 
 Config/profile events invalidate the current view before queuing its refresh.
 Callbacks from an earlier plugin session are ignored after shutdown/restart.
-
-KeyManager only receives keys pressed while the game canvas has focus. Like
-ClientUI's own sidebar toggle, a `KeyEventDispatcher` also offers our hotkeys the
-keys pressed elsewhere in the client window, such as in another sidebar panel.
-It skips canvas events (KeyManager has them), other windows, text components,
-and buttons with their own key listeners, which is how shortcut recorders work.
-
 Shutdown removes our own navigation button, unregisters the main and favorite
-hotkey listeners and the key dispatcher, and releases the panel/catalog. The settings view uses the same
+hotkey listeners, and releases the panel/catalog. The settings view uses the same
 ConfigManager keys as native configuration; per-favorite bindings stay in the
 favorites document.
 
