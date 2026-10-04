@@ -9,12 +9,14 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.GridLayout;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,6 +29,7 @@ import java.util.function.Consumer;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -43,10 +46,18 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
+import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.LinkBrowser;
 
 final class FavoritesPanel extends PluginPanel
 {
+    static final String DISCORD_URL = "https://discord.gg/c85DK83jWx";
+    static final String GITHUB_URL = "https://github.com/Brettgod1355/Sidebar-Favorites";
+    /** The logos' size beside the title, and the square black buttons they sit in, in pixels. */
+    static final int LINK_ICON_SIZE = 16;
+    private static final int LINK_BUTTON_SIZE = 24;
     private final Runnable refresh;
     private final Runnable reset;
     private final Consumer<String> add;
@@ -129,7 +140,25 @@ final class FavoritesPanel extends PluginPanel
             showCard();
         });
         top.add(gear, BorderLayout.EAST);
-        add(top, BorderLayout.NORTH);
+
+        JLabel title = label("Sidebar Favorites");
+        title.setFont(FontManager.getRunescapeBoldFont());
+        title.setForeground(Color.WHITE);
+        // The community and the code, one click from the title (owner, 2026-10-04).
+        JPanel links = new JPanel(new GridLayout(1, 2, 4, 0));
+        links.setOpaque(false);
+        links.add(link("discord_white.png", "discord_blurple.png",
+            "Sidebar Favorites on Discord: ask a question, make a suggestion or report a bug", DISCORD_URL));
+        links.add(link("github_white.png", "github_green.png",
+            "Sidebar Favorites on GitHub: code, bug reports and requests", GITHUB_URL));
+        JPanel titleRow = container(new BorderLayout());
+        titleRow.add(title, BorderLayout.WEST);
+        titleRow.add(links, BorderLayout.EAST);
+
+        JPanel north = container(new BorderLayout(0, 6));
+        north.add(titleRow, BorderLayout.NORTH);
+        north.add(top, BorderLayout.CENTER);
+        add(north, BorderLayout.NORTH);
 
         JPanel favorites = container(new BorderLayout(0, 6));
         favorites.add(empty, BorderLayout.NORTH);
@@ -451,6 +480,65 @@ final class FavoritesPanel extends PluginPanel
         }
         cell.add(lines, BorderLayout.CENTER);
         return cell;
+    }
+
+    /**
+     * A square black button that opens a web page in the browser, showing the brand's white logo and,
+     * while the mouse is over it, the brand's coloured logo on the same black (owner, 2026-10-04).
+     * Both are the brands' own files, only scaled: neither Discord nor GitHub allows recolouring
+     * their logos, so the plugin swaps between their versions instead (see THIRD_PARTY_NOTICES).
+     */
+    private static JLabel link(String restingFile, String hoverFile, String tooltip, String url)
+    {
+        BufferedImage restingLogo = logo(restingFile);
+        ImageIcon resting = new ImageIcon(restingLogo);
+        ImageIcon hovered = new ImageIcon(logoLike(hoverFile, restingLogo));
+        JLabel label = new JLabel(resting);
+        label.setOpaque(true);
+        label.setBackground(Color.BLACK);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        Dimension size = new Dimension(LINK_BUTTON_SIZE, LINK_BUTTON_SIZE);
+        label.setPreferredSize(size);
+        label.setMinimumSize(size);
+        label.setMaximumSize(size);
+        label.setToolTipText(tooltip);
+        label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        label.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                LinkBrowser.browse(url);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+                label.setIcon(hovered);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                label.setIcon(resting);
+            }
+        });
+        return label;
+    }
+
+    /** The other version of a logo at exactly the size of the first, so hovering never shifts it by a pixel. */
+    static BufferedImage logoLike(String file, BufferedImage like)
+    {
+        return ImageUtil.resizeImage(ImageUtil.loadImageResource(FavoritesPanel.class, file), like.getWidth(), like.getHeight());
+    }
+
+    /** A brand logo scaled to fit {@link #LINK_ICON_SIZE} square, keeping its proportions (the brands forbid distorting them). */
+    static BufferedImage logo(String file)
+    {
+        BufferedImage image = ImageUtil.loadImageResource(FavoritesPanel.class, file);
+        double scale = Math.min((double) LINK_ICON_SIZE / image.getWidth(), (double) LINK_ICON_SIZE / image.getHeight());
+        return ImageUtil.resizeImage(image, Math.max(1, (int) Math.round(image.getWidth() * scale)),
+            Math.max(1, (int) Math.round(image.getHeight() * scale)));
     }
 
     private static JPanel container(java.awt.LayoutManager layout)

@@ -73,7 +73,9 @@ Removing a favorite also removes its hotkey.
 
 ## Feedback
 
-Found a bug or have an idea? [Open an issue](https://github.com/Brettgod1355/Sidebar-Favorites/issues).
+Found a bug or have an idea? [Open an issue](https://github.com/Brettgod1355/Sidebar-Favorites/issues) on GitHub.
+Or join the [Discord](https://discord.gg/c85DK83jWx) to ask a question, make a suggestion or report a bug.
+Both are one click away: the buttons beside the panel's title open them.
 
 ## License
 
