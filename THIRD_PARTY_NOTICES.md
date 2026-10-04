@@ -17,6 +17,25 @@ build/runtime dependency and is not bundled in the plugin JAR. Existing panel
 icons are read from the running client and are not copied into this repository.
 Sidebar Favorites is an independent project, not an official RuneLite product.
 
+## Discord and GitHub logos (trademarks, used as link buttons)
+
+The two buttons beside the sidebar's title show the brands' own logos, taken from their official
+brand pages on 2026-10-04 and only scaled down, never recoloured or redrawn:
+
+- Discord: `discord_white.png` and `discord_blurple.png` are `Discord-Symbol-White.png` and
+  `Discord-Symbol-Blurple.png` from the white and colour "Symbol" downloads at
+  <https://discord.com/branding>, which lists white and Blurple among the logo's colours.
+- GitHub: `github_white.png` is `GitHub_Invertocat_White.png` from `GitHub_Logos.zip` at
+  <https://brand.github.com/foundations/logo>. The pack has no green file, so `github_green.png` is
+  the green Invertocat cut from the same page's colour illustration
+  (<https://brand.github.com/_next/static/media/logo-04.c5edeefa.png>), with the black around it made
+  transparent and its pixels otherwise unchanged; the page allows the mark "in white, black, or in
+  few cases grey or green", and its use "as a social button to link to your GitHub profile or project".
+
+Discord and the Discord logo are trademarks of Discord Inc.; GitHub and the Invertocat are
+trademarks of GitHub, Inc. They are used only to link to this plugin's own Discord server and GitHub
+repository, and imply no endorsement by either company.
+
 ## Gradle wrapper
 
 The wrapper scripts, JAR, and properties originate from the RuneLite example
