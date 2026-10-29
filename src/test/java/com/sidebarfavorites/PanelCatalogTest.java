@@ -57,6 +57,38 @@ public class PanelCatalogTest
     }
 
     @Test
+    public void openStateFollowsTheSelectedTabAndCloseKeepsEveryTab() throws Exception
+    {
+        SwingUtilities.invokeAndWait(() ->
+        {
+            Fixture fixture = new Fixture();
+            String alpha = fixture.catalog.entries().get(0).id;
+            String beta = fixture.catalog.entries().get(1).id;
+            List<Component> original = Arrays.asList(fixture.pane.getComponentAt(0),
+                fixture.pane.getComponentAt(1), fixture.pane.getComponentAt(2));
+            assertTrue(fixture.catalog.isOwnOpen());
+            assertFalse(fixture.catalog.isOpen(alpha));
+            assertTrue(fixture.catalog.open(alpha));
+            assertTrue(fixture.catalog.isOpen(alpha));
+            assertFalse(fixture.catalog.isOpen(beta));
+            assertFalse(fixture.catalog.isOwnOpen());
+            fixture.catalog.close();
+            assertEquals(-1, fixture.pane.getSelectedIndex());
+            assertFalse(fixture.catalog.isOpen(alpha));
+            assertTrue(fixture.pane.isVisible());
+            for (int i = 0; i < original.size(); i++)
+            {
+                assertSame(original.get(i), fixture.pane.getComponentAt(i));
+            }
+            assertTrue(fixture.catalog.open(alpha));
+            fixture.pane.setVisible(false);
+            assertFalse(fixture.catalog.isOpen(alpha));
+            fixture.pane.setSelectedIndex(2);
+            assertFalse(fixture.catalog.isOwnOpen());
+        });
+    }
+
+    @Test
     public void removedTabCannotOpenWrongPanelAndRecreatedTabCanOpen() throws Exception
     {
         SwingUtilities.invokeAndWait(() ->
@@ -87,6 +119,8 @@ public class PanelCatalogTest
             Component selected = fixture.pane.getSelectedComponent();
             assertFalse(fixture.catalog.open(id));
             assertSame(selected, fixture.pane.getSelectedComponent());
+            fixture.pane.setSelectedIndex(0);
+            assertFalse(fixture.catalog.isOpen(id));
         });
     }
 

@@ -39,7 +39,7 @@ import javax.swing.SwingUtilities;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.laf.RuneLiteTabbedPaneUI;
 
-/** Discovers tabs through public Swing APIs. The only write selects an existing tab. */
+/** Discovers tabs through public Swing APIs. The only writes select an existing tab or clear the selection. */
 final class PanelCatalog
 {
     static final class Entry
@@ -92,6 +92,39 @@ final class PanelCatalog
     boolean open(String id)
     {
         JTabbedPane pane = pane();
+        Component match = find(pane, id);
+        if (match == null || !pane.isVisible())
+        {
+            return false;
+        }
+        // Resolve at click time: tab indexes change when plugins are enabled/disabled.
+        pane.setSelectedComponent(match);
+        return true;
+    }
+
+    /** True while the sidebar is showing this favorite's panel. */
+    boolean isOpen(String id)
+    {
+        JTabbedPane pane = pane();
+        Component match = find(pane, id);
+        return match != null && pane.isVisible() && pane.getSelectedComponent() == match;
+    }
+
+    /** True while the sidebar is showing this plugin's own panel. */
+    boolean isOwnOpen()
+    {
+        JTabbedPane pane = pane();
+        return pane.isVisible() && pane.getSelectedComponent() == ownPanel;
+    }
+
+    /** Closes the open panel and keeps the icon strip, as clicking the open tab's icon does. */
+    void close()
+    {
+        pane().setSelectedIndex(-1);
+    }
+
+    private Component find(JTabbedPane pane, String id)
+    {
         Component match = null;
         for (int index = 0; index < pane.getTabCount(); index++)
         {
@@ -100,18 +133,12 @@ final class PanelCatalog
             {
                 if (match != null || !entry.available)
                 {
-                    return false;
+                    return null;
                 }
                 match = pane.getComponentAt(index);
             }
         }
-        if (match == null || !pane.isVisible())
-        {
-            return false;
-        }
-        // Resolve at click time: tab indexes change when plugins are enabled/disabled.
-        pane.setSelectedComponent(match);
-        return true;
+        return match;
     }
 
     private JTabbedPane pane()

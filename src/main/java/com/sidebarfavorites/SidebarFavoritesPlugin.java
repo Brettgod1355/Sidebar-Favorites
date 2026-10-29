@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import net.runelite.client.config.Keybind;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BooleanSupplier;
 import java.util.function.UnaryOperator;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
@@ -98,7 +99,7 @@ public class SidebarFavoritesPlugin extends Plugin
                 {
                     SwingUtilities.invokeLater(() -> withSession(session, () ->
                     {
-                        if (navigation != null)
+                        if (navigation != null && !closeIfShowing(catalog::isOwnOpen))
                         {
                             toolbar.openPanel(navigation);
                         }
@@ -211,6 +212,7 @@ public class SidebarFavoritesPlugin extends Plugin
                     SwingUtilities.invokeLater(() -> withSession(session, () ->
                     {
                         if (settingsRevision.get() != revision) { return; }
+                        if (closeIfShowing(() -> catalog.isOpen(entry.getValue()))) { return; }
                         // Reveal the sidebar through our own button before selecting the target.
                         toolbar.openPanel(navigation);
                         open(entry.getValue());
@@ -221,6 +223,24 @@ public class SidebarFavoritesPlugin extends Plugin
             keyManager.registerKeyListener(listener);
             favoriteListeners.add(listener);
         }
+    }
+
+    /** A second press of the key that opened a panel closes it again, leaving the icon strip. */
+    private boolean closeIfShowing(BooleanSupplier showing)
+    {
+        try
+        {
+            if (showing.getAsBoolean())
+            {
+                catalog.close();
+                return true;
+            }
+        }
+        catch (IllegalStateException ex)
+        {
+            // Unsupported sidebar layout: fall through to opening, which reports it.
+        }
+        return false;
     }
 
     private void clearFavoriteHotkeys()

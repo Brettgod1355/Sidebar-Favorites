@@ -68,6 +68,10 @@ Live checks pending for this update:
 - [ ] Duplicate shortcuts are refused, including the main shortcut.
 - [ ] Native settings conflicts give the main shortcut precedence.
 - [ ] Removed/unavailable favorites do not consume shortcuts.
+- [ ] Pressing a favorite's shortcut while its panel is showing closes the panel and leaves the icon strip; pressing it again reopens it.
+- [ ] Pressing a favorite's shortcut while another panel is showing switches to the favorite instead of closing anything.
+- [ ] The Open Favorites shortcut closes Favorites when Favorites is showing.
+- [ ] With the sidebar hidden (Ctrl+F11), a shortcut opens the sidebar to its panel.
 
 Saved favorites now use format version 2 with key codes and modifiers. Version 1
 is read without bindings and upgraded on the next edit. Older plugin versions

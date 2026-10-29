@@ -24,7 +24,7 @@ public interface SidebarFavoritesConfig extends Config
     }
 
     @ConfigItem(keyName = "openHotkey", name = "Open Favorites hotkey",
-        description = "Open Sidebar Favorites while the game has keyboard focus. "
+        description = "Open Sidebar Favorites, or close it when it is showing, while the game has keyboard focus. "
             + "Suggestions: Ctrl+F, Ctrl+Shift+F, or Alt+F. "
             + "Choose any key combination that does not conflict with your other bindings.", position = 2)
     default Keybind openHotkey()

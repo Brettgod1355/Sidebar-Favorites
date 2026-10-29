@@ -13,6 +13,10 @@ The catalog finds the `JTabbedPane` containing our wrapped panel through
 and reads tab components, tooltips, icons, and enabled state. Opening a shortcut
 rescans and calls `setSelectedComponent` on the existing component, on the Swing
 event thread. RuneLite's own change listener handles normal panel activation.
+Pressing a shortcut while its panel is already showing clears the selection
+(`setSelectedIndex(-1)`), the same thing clicking the open tab's icon or RuneLite's
+plugin panel toggle key does, so the panel closes and the icon strip stays. The
+sidebar itself is never hidden by us.
 No replacement navigation buttons are made for other plugins.
 
 The catalog retains no references to other plugins' panels between operations.
