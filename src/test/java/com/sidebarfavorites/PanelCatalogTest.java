@@ -57,7 +57,7 @@ public class PanelCatalogTest
     }
 
     @Test
-    public void openStateFollowsTheSelectedTabAndCloseKeepsEveryTab() throws Exception
+    public void openStateFollowsTheSelectedTab() throws Exception
     {
         SwingUtilities.invokeAndWait(() ->
         {
@@ -72,9 +72,10 @@ public class PanelCatalogTest
             assertTrue(fixture.catalog.isOpen(alpha));
             assertFalse(fixture.catalog.isOpen(beta));
             assertFalse(fixture.catalog.isOwnOpen());
-            fixture.catalog.close();
-            assertEquals(-1, fixture.pane.getSelectedIndex());
+            // What RuneLite's ClientToolbar.openPanel(null) leaves behind: no panel selected.
+            fixture.pane.setSelectedIndex(-1);
             assertFalse(fixture.catalog.isOpen(alpha));
+            assertFalse(fixture.catalog.isOwnOpen());
             assertTrue(fixture.pane.isVisible());
             for (int i = 0; i < original.size(); i++)
             {

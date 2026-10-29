@@ -39,7 +39,7 @@ import javax.swing.SwingUtilities;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.laf.RuneLiteTabbedPaneUI;
 
-/** Discovers tabs through public Swing APIs. The only writes select an existing tab or clear the selection. */
+/** Discovers tabs through public Swing APIs. The only write selects an existing tab. */
 final class PanelCatalog
 {
     static final class Entry
@@ -115,12 +115,6 @@ final class PanelCatalog
     {
         JTabbedPane pane = pane();
         return pane.isVisible() && pane.getSelectedComponent() == ownPanel;
-    }
-
-    /** Closes the open panel and keeps the icon strip, as clicking the open tab's icon does. */
-    void close()
-    {
-        pane().setSelectedIndex(-1);
     }
 
     private Component find(JTabbedPane pane, String id)
