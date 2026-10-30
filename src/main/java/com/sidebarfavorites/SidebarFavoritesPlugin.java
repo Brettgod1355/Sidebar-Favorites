@@ -23,6 +23,12 @@ import java.util.function.BooleanSupplier;
 import java.util.function.UnaryOperator;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.events.GameTick;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -47,6 +53,8 @@ public class SidebarFavoritesPlugin extends Plugin
     @Inject private ConfigManager configManager;
     @Inject private SidebarFavoritesConfig config;
     @Inject private KeyManager keyManager;
+    @Inject private ChatMessageManager chatMessageManager;
+    private volatile String updateLine;
     private HotkeyListener openHotkey;
     private final List<HotkeyListener> favoriteListeners = new ArrayList<>();
     private Map<Keybind, String> registeredKeys = Collections.emptyMap();
@@ -71,6 +79,7 @@ public class SidebarFavoritesPlugin extends Plugin
     @Override
     protected void startUp() throws Exception
     {
+        noteVersion();
         onEdt(() ->
         {
             active = true;
@@ -391,9 +400,40 @@ public class SidebarFavoritesPlugin extends Plugin
         scheduleRefresh();
     }
 
+    /** Decides the update line before anything is saved; with nothing to say, remembers the version now. */
+    private void noteVersion()
+    {
+        String last = configManager.getConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.LAST_VERSION);
+        String saved = configManager.getConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.FAVORITES);
+        updateLine = WhatsNew.message(last, WhatsNew.hasFavorites(saved));
+        if (updateLine == null && !WhatsNew.VERSION.equals(last))
+        {
+            configManager.setConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.LAST_VERSION,
+                WhatsNew.VERSION);
+        }
+    }
+
+    @Subscribe
+    public void onGameTick(GameTick event)
+    {
+        String line = updateLine;
+        if (line == null)
+        {
+            return;
+        }
+        updateLine = null;
+        configManager.setConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.LAST_VERSION,
+            WhatsNew.VERSION);
+        chatMessageManager.queue(QueuedMessage.builder()
+            .type(ChatMessageType.GAMEMESSAGE)
+            .runeLiteFormattedMessage(new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(line).build())
+            .build());
+    }
+
     @Override
     protected void shutDown() throws Exception
     {
+        updateLine = null;
         onEdt(() ->
         {
             active = false;

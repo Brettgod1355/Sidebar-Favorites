@@ -72,6 +72,8 @@ Live checks pending for this update:
 - [ ] Pressing a favorite's shortcut while another panel is showing switches to the favorite instead of closing anything.
 - [ ] The Open Favorites shortcut closes Favorites when Favorites is showing.
 - [ ] With the sidebar hidden (Ctrl+F11), a shortcut opens the sidebar to its panel.
+- [ ] Updating from 1.0.4 with saved favorites says "Sidebar Favorites updated to 1.0.5: ..." once in game chat after login; logging out and in again says nothing.
+- [ ] A fresh install, or a profile with no favorites, says nothing in chat.
 - [ ] With Hotkeys also close turned off (in either settings view), a second press leaves the panel open; turning it back on restores closing.
 
 Saved favorites now use format version 2 with key codes and modifiers. Version 1

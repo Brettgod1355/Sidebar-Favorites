@@ -71,6 +71,7 @@ Removing a favorite also removes its hotkey.
 - The Add picker lists enabled plugins with available sidebar panels. Plugins without
   panels and utility buttons cannot be added.
 - Top and Bottom are priority preferences. Another icon with the same priority can affect the exact position.
+- After an update, one line in game chat says what's new, once, if you have saved favorites.
 - Duplicate shortcut assignments within Favorites are rejected. If a conflicting main
   shortcut is assigned through RuneLite's settings, the main shortcut takes precedence.
   Unavailable favorites do not activate their shortcuts.

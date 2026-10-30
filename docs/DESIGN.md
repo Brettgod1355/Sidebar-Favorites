@@ -42,6 +42,12 @@ hotkey listeners, and releases the panel/catalog. The settings view uses the sam
 ConfigManager keys as native configuration; per-favorite bindings stay in the
 favorites document.
 
+After an update, `WhatsNew` decides one chat line at startup, before anything is
+saved: it is said only when the hidden `lastVersion` differs from `WhatsNew.VERSION`,
+the note is not empty, and the profile has at least one saved favorite (versions
+before 1.0.5 stored no version). The line is queued on the first game tick after
+login and `lastVersion` is written then; with nothing to say it is written at startup.
+
 ## Reused work and review context
 
 The public component discovery and build setup adapt Sidebar Organizer. Its

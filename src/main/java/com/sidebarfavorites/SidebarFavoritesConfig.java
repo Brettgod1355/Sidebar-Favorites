@@ -66,6 +66,15 @@ public interface SidebarFavoritesConfig extends Config
         return SidebarPosition.BOTTOM;
     }
 
+    String LAST_VERSION = "lastVersion";
+
+    @ConfigItem(keyName = LAST_VERSION, name = "Last version",
+        description = "The plugin version that last said what is new in chat", hidden = true)
+    default String lastVersion()
+    {
+        return "";
+    }
+
     String FAVORITES = "favoritesV1";
 
     @ConfigItem(keyName = FAVORITES, name = "Saved favorites",
