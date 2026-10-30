@@ -44,7 +44,8 @@ favorites document.
 
 After an update, `WhatsNew` decides one chat line at startup, before anything is
 saved: it is said only when the hidden `lastVersion` differs from `WhatsNew.VERSION`,
-the note is not empty, and the profile has at least one saved favorite (versions
+the note is not empty, Say when updated (`updateMessage`, on by default) is on,
+and the profile has at least one saved favorite (versions
 before 1.0.5 stored no version). The line is queued on the first game tick after
 login and `lastVersion` is written then; with nothing to say it is written at startup.
 

@@ -127,6 +127,10 @@ public class FavoritesPanelTest
             assertTrue(hotkeysClose.isSelected());
             hotkeysClose.doClick();
             assertEquals(false, writes.get(SidebarFavoritesConfig.HOTKEYS_CLOSE));
+            javax.swing.JCheckBox updateMessage = checkBox(panel, "Say when updated");
+            assertTrue(updateMessage.isSelected());
+            updateMessage.doClick();
+            assertEquals(false, writes.get(SidebarFavoritesConfig.UPDATE_MESSAGE));
         });
     }
 

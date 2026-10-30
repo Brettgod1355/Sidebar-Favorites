@@ -380,6 +380,7 @@ public class SidebarFavoritesPlugin extends Plugin
                 || SidebarFavoritesConfig.POSITION.equals(event.getKey())
                 || SidebarFavoritesConfig.SHOW_INSTRUCTIONS.equals(event.getKey())
                 || SidebarFavoritesConfig.HOTKEYS_CLOSE.equals(event.getKey())
+                || SidebarFavoritesConfig.UPDATE_MESSAGE.equals(event.getKey())
                 || "openHotkey".equals(event.getKey())))
         {
             settingsRevision.incrementAndGet();
@@ -400,12 +401,15 @@ public class SidebarFavoritesPlugin extends Plugin
         scheduleRefresh();
     }
 
-    /** Decides the update line before anything is saved; with nothing to say, remembers the version now. */
+    /**
+     * Decides the update line before anything is saved; with nothing to say, or Say when updated
+     * turned off, remembers the version now so a later switch back on does not repeat an old line.
+     */
     private void noteVersion()
     {
         String last = configManager.getConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.LAST_VERSION);
         String saved = configManager.getConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.FAVORITES);
-        updateLine = WhatsNew.message(last, WhatsNew.hasFavorites(saved));
+        updateLine = config.updateMessage() ? WhatsNew.message(last, WhatsNew.hasFavorites(saved)) : null;
         if (updateLine == null && !WhatsNew.VERSION.equals(last))
         {
             configManager.setConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.LAST_VERSION,
@@ -424,6 +428,10 @@ public class SidebarFavoritesPlugin extends Plugin
         updateLine = null;
         configManager.setConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.LAST_VERSION,
             WhatsNew.VERSION);
+        if (!config.updateMessage())
+        {
+            return;
+        }
         chatMessageManager.queue(QueuedMessage.builder()
             .type(ChatMessageType.GAMEMESSAGE)
             .runeLiteFormattedMessage(new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(line).build())

@@ -8,6 +8,7 @@ package com.sidebarfavorites;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Keybind;
 
 @ConfigGroup(SidebarFavoritesConfig.GROUP)
@@ -16,6 +17,10 @@ public interface SidebarFavoritesConfig extends Config
     String GROUP = "sidebarfavorites";
     String SHOW_INSTRUCTIONS = "showInstructions";
     String HOTKEYS_CLOSE = "hotkeysClose";
+    String UPDATE_MESSAGE = "updateMessage";
+
+    @ConfigSection(name = "Chat messages", description = "Lines Sidebar Favorites says in game chat", position = 10)
+    String CHAT = "chat";
 
     @ConfigItem(keyName = SHOW_INSTRUCTIONS, name = "Show instructions",
         description = "Show the help text above your favorites", position = 1)
@@ -64,6 +69,14 @@ public interface SidebarFavoritesConfig extends Config
     default SidebarPosition sidebarPosition()
     {
         return SidebarPosition.BOTTOM;
+    }
+
+    @ConfigItem(keyName = UPDATE_MESSAGE, name = "Say when updated",
+        description = "One line in chat the first time you log in after an update, saying what's new",
+        position = 11, section = CHAT)
+    default boolean updateMessage()
+    {
+        return true;
     }
 
     String LAST_VERSION = "lastVersion";

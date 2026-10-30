@@ -46,6 +46,7 @@ settings shown in RuneLite's plugin configuration, so you can use either interfa
 | **Show instructions** | Hide the help text to leave more room for favorites. | On |
 | **Open Favorites hotkey** | Open your favorites list with a custom shortcut. | Not set |
 | **Hotkeys also close** | Press a shortcut again to close the panel it opened. Turn off to have shortcuts only open panels. | On |
+| **Say when updated** (Chat messages) | One line in chat the first time you log in after an update, saying what's new. | On |
 
 Try **Ctrl+F**, **Ctrl+Shift+F**, or **Alt+F**, or choose your own combination.
 The main shortcut opens Favorites; individual shortcuts open their assigned panels.
@@ -72,6 +73,7 @@ Removing a favorite also removes its hotkey.
   panels and utility buttons cannot be added.
 - Top and Bottom are priority preferences. Another icon with the same priority can affect the exact position.
 - After an update, one line in game chat says what's new, once, if you have saved favorites.
+  Turn off **Say when updated** to never see it.
 - Duplicate shortcut assignments within Favorites are rejected. If a conflicting main
   shortcut is assigned through RuneLite's settings, the main shortcut takes precedence.
   Unavailable favorites do not activate their shortcuts.
