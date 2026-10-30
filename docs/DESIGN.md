@@ -17,7 +17,8 @@ Pressing a shortcut while its panel is already showing calls RuneLite's public
 `ClientToolbar.openPanel(null)`, which selects no panel: the same result as clicking
 the open tab's icon or RuneLite's plugin panel toggle key, so the panel closes and
 the icon strip stays. The plugin never changes the sidebar component to do it, and
-never hides the sidebar.
+never hides the sidebar. The "Hotkeys also close" setting (`hotkeysClose`, on by
+default) turns the close off, so a second press does nothing.
 No replacement navigation buttons are made for other plugins.
 
 The catalog retains no references to other plugins' panels between operations.

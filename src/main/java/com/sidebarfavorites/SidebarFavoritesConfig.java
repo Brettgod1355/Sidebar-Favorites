@@ -15,6 +15,7 @@ public interface SidebarFavoritesConfig extends Config
 {
     String GROUP = "sidebarfavorites";
     String SHOW_INSTRUCTIONS = "showInstructions";
+    String HOTKEYS_CLOSE = "hotkeysClose";
 
     @ConfigItem(keyName = SHOW_INSTRUCTIONS, name = "Show instructions",
         description = "Show the help text above your favorites", position = 1)
@@ -24,12 +25,20 @@ public interface SidebarFavoritesConfig extends Config
     }
 
     @ConfigItem(keyName = "openHotkey", name = "Open Favorites hotkey",
-        description = "Open Sidebar Favorites, or close it when it is showing, while the game has keyboard focus. "
+        description = "Open Sidebar Favorites while the game has keyboard focus. "
             + "Suggestions: Ctrl+F, Ctrl+Shift+F, or Alt+F. "
             + "Choose any key combination that does not conflict with your other bindings.", position = 2)
     default Keybind openHotkey()
     {
         return Keybind.NOT_SET;
+    }
+
+    @ConfigItem(keyName = HOTKEYS_CLOSE, name = "Hotkeys also close",
+        description = "Press a hotkey again to close the panel it opened. "
+            + "Turn off to have hotkeys only open panels.", position = 3)
+    default boolean hotkeysClose()
+    {
+        return true;
     }
 
     String POSITION = "sidebarPosition";

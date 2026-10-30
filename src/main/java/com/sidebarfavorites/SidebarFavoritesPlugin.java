@@ -226,12 +226,17 @@ public class SidebarFavoritesPlugin extends Plugin
     }
 
     /**
-     * A second press of the key that opened a panel closes it again, leaving the icon strip. It goes
+     * Unless turned off in settings, a second press of the key that opened a panel closes it again,
+     * leaving the icon strip. It goes
      * through RuneLite's public ClientToolbar, whose openPanel(null) selects no panel; the plugin
      * never changes the sidebar component itself.
      */
     private boolean closeIfShowing(BooleanSupplier showing)
     {
+        if (!config.hotkeysClose())
+        {
+            return false;
+        }
         try
         {
             if (showing.getAsBoolean())
@@ -365,6 +370,7 @@ public class SidebarFavoritesPlugin extends Plugin
             && (SidebarFavoritesConfig.FAVORITES.equals(event.getKey())
                 || SidebarFavoritesConfig.POSITION.equals(event.getKey())
                 || SidebarFavoritesConfig.SHOW_INSTRUCTIONS.equals(event.getKey())
+                || SidebarFavoritesConfig.HOTKEYS_CLOSE.equals(event.getKey())
                 || "openHotkey".equals(event.getKey())))
         {
             settingsRevision.incrementAndGet();

@@ -44,11 +44,13 @@ settings shown in RuneLite's plugin configuration, so you can use either interfa
 | --- | --- | --- |
 | **Sidebar position** | Place the gold star at the top or bottom of sidebar panel icons. | Bottom |
 | **Show instructions** | Hide the help text to leave more room for favorites. | On |
-| **Open Favorites hotkey** | Open or close your favorites list with a custom shortcut. | Not set |
+| **Open Favorites hotkey** | Open your favorites list with a custom shortcut. | Not set |
+| **Hotkeys also close** | Press a shortcut again to close the panel it opened. Turn off to have shortcuts only open panels. | On |
 
 Try **Ctrl+F**, **Ctrl+Shift+F**, or **Alt+F**, or choose your own combination.
 The main shortcut opens Favorites; individual shortcuts open their assigned panels.
-Press the same shortcut again to close that panel; the sidebar icons stay in place.
+Press the same shortcut again to close that panel; the sidebar icons stay in place
+(turn off **Hotkeys also close** if you'd rather shortcuts only open panels).
 Hotkeys work while the game has keyboard focus, including at the login screen, so
 after clicking inside a panel, click the game before pressing a shortcut again.
 To hide the whole sidebar, use RuneLite's own **Sidebar toggle key** (Ctrl+F11 by default).

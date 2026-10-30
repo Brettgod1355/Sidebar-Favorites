@@ -72,6 +72,7 @@ Live checks pending for this update:
 - [ ] Pressing a favorite's shortcut while another panel is showing switches to the favorite instead of closing anything.
 - [ ] The Open Favorites shortcut closes Favorites when Favorites is showing.
 - [ ] With the sidebar hidden (Ctrl+F11), a shortcut opens the sidebar to its panel.
+- [ ] With Hotkeys also close turned off (in either settings view), a second press leaves the panel open; turning it back on restores closing.
 
 Saved favorites now use format version 2 with key codes and modifiers. Version 1
 is read without bindings and upgraded on the next edit. Older plugin versions
