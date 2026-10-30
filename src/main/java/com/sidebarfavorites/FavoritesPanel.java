@@ -86,6 +86,8 @@ final class FavoritesPanel extends PluginPanel
     private final JComboBox<SidebarFavoritesConfig.SidebarPosition> position =
         new JComboBox<>(SidebarFavoritesConfig.SidebarPosition.values());
     private final JCheckBox instructions = new JCheckBox("Show instructions");
+    private final JCheckBox hotkeysClose = new JCheckBox("Hotkeys also close");
+    private final JCheckBox updateMessage = new JCheckBox("Say when updated");
     private KeybindEditor mainKey;
     private KeybindEditor favoriteKey;
     private final JPanel favoriteKeyRow = container(new BorderLayout(0, 4));
@@ -329,6 +331,12 @@ final class FavoritesPanel extends PluginPanel
         mainKey = new KeybindEditor(key -> setting.accept("openHotkey", key));
         settings.add(mainKey);
         settings.add(text("Try Ctrl+F, Ctrl+Shift+F, or Alt+F, or choose your own shortcut."));
+        hotkeysClose.setOpaque(false);
+        settings.add(hotkeysClose);
+        settings.add(text("Press a hotkey again to close the panel it opened."));
+        updateMessage.setOpaque(false);
+        settings.add(updateMessage);
+        settings.add(text("One line in chat after an update, saying what's new."));
         JPanel settingsPage = container(new BorderLayout());
         settingsPage.add(settings, BorderLayout.NORTH);
         body.add(scroll(settingsPage), "settings");
@@ -339,6 +347,14 @@ final class FavoritesPanel extends PluginPanel
         instructions.addActionListener(event ->
         {
             if (!syncing) { setting.accept(SidebarFavoritesConfig.SHOW_INSTRUCTIONS, instructions.isSelected()); }
+        });
+        hotkeysClose.addActionListener(event ->
+        {
+            if (!syncing) { setting.accept(SidebarFavoritesConfig.HOTKEYS_CLOSE, hotkeysClose.isSelected()); }
+        });
+        updateMessage.addActionListener(event ->
+        {
+            if (!syncing) { setting.accept(SidebarFavoritesConfig.UPDATE_MESSAGE, updateMessage.isSelected()); }
         });
         favoriteKey = new KeybindEditor(key ->
         {
@@ -358,6 +374,8 @@ final class FavoritesPanel extends PluginPanel
         {
             position.setSelectedItem(config.sidebarPosition());
             instructions.setSelected(config.showInstructions());
+            hotkeysClose.setSelected(config.hotkeysClose());
+            updateMessage.setSelected(config.updateMessage());
             mainKey.setValue(config.openHotkey());
         }
         finally { syncing = false; }

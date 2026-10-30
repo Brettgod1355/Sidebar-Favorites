@@ -123,6 +123,14 @@ public class FavoritesPanelTest
             assertEquals(SidebarFavoritesConfig.SidebarPosition.TOP, writes.get(SidebarFavoritesConfig.POSITION));
             find(panel, javax.swing.JCheckBox.class).doClick();
             assertEquals(false, writes.get(SidebarFavoritesConfig.SHOW_INSTRUCTIONS));
+            javax.swing.JCheckBox hotkeysClose = checkBox(panel, "Hotkeys also close");
+            assertTrue(hotkeysClose.isSelected());
+            hotkeysClose.doClick();
+            assertEquals(false, writes.get(SidebarFavoritesConfig.HOTKEYS_CLOSE));
+            javax.swing.JCheckBox updateMessage = checkBox(panel, "Say when updated");
+            assertTrue(updateMessage.isSelected());
+            updateMessage.doClick();
+            assertEquals(false, writes.get(SidebarFavoritesConfig.UPDATE_MESSAGE));
         });
     }
 
@@ -157,6 +165,23 @@ public class FavoritesPanelTest
             if (child instanceof Container)
             {
                 JButton found = button((Container) child, text);
+                if (found != null) { return found; }
+            }
+        }
+        return null;
+    }
+
+    private static javax.swing.JCheckBox checkBox(Container root, String text)
+    {
+        for (Component child : root.getComponents())
+        {
+            if (child instanceof javax.swing.JCheckBox && text.equals(((javax.swing.JCheckBox) child).getText()))
+            {
+                return (javax.swing.JCheckBox) child;
+            }
+            if (child instanceof Container)
+            {
+                javax.swing.JCheckBox found = checkBox((Container) child, text);
                 if (found != null) { return found; }
             }
         }

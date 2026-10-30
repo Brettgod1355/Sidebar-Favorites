@@ -17,7 +17,8 @@ Pressing a shortcut while its panel is already showing calls RuneLite's public
 `ClientToolbar.openPanel(null)`, which selects no panel: the same result as clicking
 the open tab's icon or RuneLite's plugin panel toggle key, so the panel closes and
 the icon strip stays. The plugin never changes the sidebar component to do it, and
-never hides the sidebar.
+never hides the sidebar. The "Hotkeys also close" setting (`hotkeysClose`, on by
+default) turns the close off, so a second press does nothing.
 No replacement navigation buttons are made for other plugins.
 
 The catalog retains no references to other plugins' panels between operations.
@@ -40,6 +41,13 @@ Shutdown removes our own navigation button, unregisters the main and favorite
 hotkey listeners, and releases the panel/catalog. The settings view uses the same
 ConfigManager keys as native configuration; per-favorite bindings stay in the
 favorites document.
+
+After an update, `WhatsNew` decides one chat line at startup, before anything is
+saved: it is said only when the hidden `lastVersion` differs from `WhatsNew.VERSION`,
+the note is not empty, Say when updated (`updateMessage`, on by default) is on,
+and the profile has at least one saved favorite (versions
+before 1.0.5 stored no version). The line is queued on the first game tick after
+login and `lastVersion` is written then; with nothing to say it is written at startup.
 
 ## Reused work and review context
 

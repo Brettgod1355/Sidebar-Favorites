@@ -44,11 +44,14 @@ settings shown in RuneLite's plugin configuration, so you can use either interfa
 | --- | --- | --- |
 | **Sidebar position** | Place the gold star at the top or bottom of sidebar panel icons. | Bottom |
 | **Show instructions** | Hide the help text to leave more room for favorites. | On |
-| **Open Favorites hotkey** | Open or close your favorites list with a custom shortcut. | Not set |
+| **Open Favorites hotkey** | Open your favorites list with a custom shortcut. | Not set |
+| **Hotkeys also close** | Press a shortcut again to close the panel it opened. Turn off to have shortcuts only open panels. | On |
+| **Say when updated** (Chat messages) | One line in chat the first time you log in after an update, saying what's new. | On |
 
 Try **Ctrl+F**, **Ctrl+Shift+F**, or **Alt+F**, or choose your own combination.
 The main shortcut opens Favorites; individual shortcuts open their assigned panels.
-Press the same shortcut again to close that panel; the sidebar icons stay in place.
+Press the same shortcut again to close that panel; the sidebar icons stay in place
+(turn off **Hotkeys also close** if you'd rather shortcuts only open panels).
 Hotkeys work while the game has keyboard focus, including at the login screen, so
 after clicking inside a panel, click the game before pressing a shortcut again.
 To hide the whole sidebar, use RuneLite's own **Sidebar toggle key** (Ctrl+F11 by default).
@@ -69,6 +72,8 @@ Removing a favorite also removes its hotkey.
 - The Add picker lists enabled plugins with available sidebar panels. Plugins without
   panels and utility buttons cannot be added.
 - Top and Bottom are priority preferences. Another icon with the same priority can affect the exact position.
+- After an update, one line in game chat says what's new, once, if you have saved favorites.
+  Turn off **Say when updated** to never see it.
 - Duplicate shortcut assignments within Favorites are rejected. If a conflicting main
   shortcut is assigned through RuneLite's settings, the main shortcut takes precedence.
   Unavailable favorites do not activate their shortcuts.

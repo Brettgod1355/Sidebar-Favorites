@@ -23,6 +23,12 @@ import java.util.function.BooleanSupplier;
 import java.util.function.UnaryOperator;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.events.GameTick;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -47,6 +53,8 @@ public class SidebarFavoritesPlugin extends Plugin
     @Inject private ConfigManager configManager;
     @Inject private SidebarFavoritesConfig config;
     @Inject private KeyManager keyManager;
+    @Inject private ChatMessageManager chatMessageManager;
+    private volatile String updateLine;
     private HotkeyListener openHotkey;
     private final List<HotkeyListener> favoriteListeners = new ArrayList<>();
     private Map<Keybind, String> registeredKeys = Collections.emptyMap();
@@ -71,6 +79,7 @@ public class SidebarFavoritesPlugin extends Plugin
     @Override
     protected void startUp() throws Exception
     {
+        noteVersion();
         onEdt(() ->
         {
             active = true;
@@ -226,12 +235,17 @@ public class SidebarFavoritesPlugin extends Plugin
     }
 
     /**
-     * A second press of the key that opened a panel closes it again, leaving the icon strip. It goes
+     * Unless turned off in settings, a second press of the key that opened a panel closes it again,
+     * leaving the icon strip. It goes
      * through RuneLite's public ClientToolbar, whose openPanel(null) selects no panel; the plugin
      * never changes the sidebar component itself.
      */
     private boolean closeIfShowing(BooleanSupplier showing)
     {
+        if (!config.hotkeysClose())
+        {
+            return false;
+        }
         try
         {
             if (showing.getAsBoolean())
@@ -365,6 +379,8 @@ public class SidebarFavoritesPlugin extends Plugin
             && (SidebarFavoritesConfig.FAVORITES.equals(event.getKey())
                 || SidebarFavoritesConfig.POSITION.equals(event.getKey())
                 || SidebarFavoritesConfig.SHOW_INSTRUCTIONS.equals(event.getKey())
+                || SidebarFavoritesConfig.HOTKEYS_CLOSE.equals(event.getKey())
+                || SidebarFavoritesConfig.UPDATE_MESSAGE.equals(event.getKey())
                 || "openHotkey".equals(event.getKey())))
         {
             settingsRevision.incrementAndGet();
@@ -385,9 +401,47 @@ public class SidebarFavoritesPlugin extends Plugin
         scheduleRefresh();
     }
 
+    /**
+     * Decides the update line before anything is saved; with nothing to say, or Say when updated
+     * turned off, remembers the version now so a later switch back on does not repeat an old line.
+     */
+    private void noteVersion()
+    {
+        String last = configManager.getConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.LAST_VERSION);
+        String saved = configManager.getConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.FAVORITES);
+        updateLine = config.updateMessage() ? WhatsNew.message(last, WhatsNew.hasFavorites(saved)) : null;
+        if (updateLine == null && !WhatsNew.VERSION.equals(last))
+        {
+            configManager.setConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.LAST_VERSION,
+                WhatsNew.VERSION);
+        }
+    }
+
+    @Subscribe
+    public void onGameTick(GameTick event)
+    {
+        String line = updateLine;
+        if (line == null)
+        {
+            return;
+        }
+        updateLine = null;
+        configManager.setConfiguration(SidebarFavoritesConfig.GROUP, SidebarFavoritesConfig.LAST_VERSION,
+            WhatsNew.VERSION);
+        if (!config.updateMessage())
+        {
+            return;
+        }
+        chatMessageManager.queue(QueuedMessage.builder()
+            .type(ChatMessageType.GAMEMESSAGE)
+            .runeLiteFormattedMessage(new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(line).build())
+            .build());
+    }
+
     @Override
     protected void shutDown() throws Exception
     {
+        updateLine = null;
         onEdt(() ->
         {
             active = false;
