@@ -1,5 +1,7 @@
 # Sidebar Favorites
 
+[![Plugin Hub installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fbrettgod1355.github.io%2Fhub-installs%2Fdata%2Fbadges.json&query=%24.counts%5B%27sidebar-favorites%27%5D&label=installs&color=dc8a00)](https://brettgod1355.github.io/hub-installs/)
+
 **Your favorite panels. Your order. Your shortcuts.**
 
 Keep the RuneLite panels you use most in one convenient list. Add favorites,
